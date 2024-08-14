@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -33,7 +35,7 @@ public class UserEntity {
     private String userEmail;
 
     @Column(name = "user_phone", nullable = false, length = 30)
-    private Number userPhone;
+    private Integer userPhone;
 
     @Column(name = "user_gender", nullable = false)
     private Boolean userGender;
@@ -42,9 +44,11 @@ public class UserEntity {
     private String userAddress;
 
     @Column(name = "user_created_at", nullable = false)
+    @CreationTimestamp
     private Timestamp userCreatedAt;
 
     @Column(name = "user_updated_at")
+    @UpdateTimestamp
     private Timestamp userUpdatedAt;
 
     @Column(name = "user_deleted_at")
