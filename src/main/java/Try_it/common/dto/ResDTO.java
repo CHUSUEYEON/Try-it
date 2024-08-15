@@ -1,4 +1,4 @@
-package Try_it.dto;
+package Try_it.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

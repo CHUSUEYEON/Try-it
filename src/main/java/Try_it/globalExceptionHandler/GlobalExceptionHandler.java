@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
-import Try_it.dto.ResDTO;
-import Try_it.vo.StatusCode;
+import Try_it.common.dto.ResDTO;
+import Try_it.common.vo.StatusCode;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
