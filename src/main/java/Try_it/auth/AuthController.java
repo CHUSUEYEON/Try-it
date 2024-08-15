@@ -121,8 +121,13 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "인증코드 보내기", description = "requestBody : 이메일(인가X)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "인증 코드 전송 성공"),
+        @ApiResponse(responseCode = "400", description = "인증 코드 전송 실패")
+    })
     @PostMapping("/email")
-    public ResponseEntity<ResDTO> sendEmail(@RequestBody EmailDTO emailDTO){
+    public ResponseEntity<ResDTO> sendEmail(@Valid @RequestBody EmailDTO emailDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
         authService.sendVerificationCode(emailDTO.getEmail(), verifiedAt);
         return ResponseEntity.ok().body(ResDTO
@@ -134,6 +139,11 @@ public class AuthController {
         );
     }
 
+    @Operation(summary = "메일 인증", description = "requsetBody : 인증 코드(인가X)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "인증 성공"),
+        @ApiResponse(responseCode = "400", description = "인증 실패")
+    })
     @PostMapping("/verify-email")
     public ResponseEntity<ResDTO> verifyEmail(@RequestBody EmailDTO emailDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
