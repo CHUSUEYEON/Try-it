@@ -1,23 +1,26 @@
-package Try_it.user;
+package Try_it.auth;
 
 import Try_it.common.dto.ResDTO;
 import Try_it.security.TokenProvider;
 import Try_it.common.vo.StatusCode;
+import Try_it.user.UserDTO;
+import Try_it.user.UserEntity;
+import Try_it.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,13 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
-    private final UserService userService;
+    private final AuthService authService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
     @Autowired
-    public AuthController(UserService userService, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
-        this.userService = userService;
+    public AuthController(AuthService authService, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
+        this.authService = authService;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
     }
@@ -56,7 +59,7 @@ public class AuthController {
             .userIsAdmin(false)
             .build();
 
-        UserEntity registeredUser = userService.createUser(user);
+        UserEntity registeredUser = authService.createUser(user);
         UserDTO responseUserDTO = userDTO.builder()
             .userId(registeredUser.getUserId())
             .userName(registeredUser.getUserName())
@@ -87,7 +90,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<ResDTO> login(@Valid @RequestBody UserDTO userDTO){
-        UserEntity user = userService.getUserByCredentials(userDTO.getUserId(), userDTO.getUserPassword());
+        UserEntity user = authService.getUserByCredentials(userDTO.getUserId(), userDTO.getUserPassword());
         if(user != null){
             String token = tokenProvider.create(user);
             final UserDTO responseUserDTO = UserDTO.builder()
@@ -116,5 +119,30 @@ public class AuthController {
                 .badRequest()
                .body(ResDTO.builder().statusCode(StatusCode.BAD_REQUEST).build());
         }
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<ResDTO> sendEmail(@RequestBody EmailDTO emailDTO){
+        LocalDateTime verifiedAt = LocalDateTime.now();
+        authService.sendVerificationCode(emailDTO.getEmail(), verifiedAt);
+        return ResponseEntity.ok().body(ResDTO
+            .builder()
+            .statusCode(StatusCode.OK)
+            .data(emailDTO.getEmail())
+            .message("인증 코드 전송 성공")
+            .build()
+        );
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<ResDTO> verifyEmail(@RequestBody EmailDTO emailDTO){
+        LocalDateTime verifiedAt = LocalDateTime.now();
+        authService.verifyCode(emailDTO.getCode(), verifiedAt);
+        return ResponseEntity.ok().body(ResDTO
+            .builder()
+            .statusCode(StatusCode.OK)
+            .message("메일 인증 성공")
+            .build()
+        );
     }
 }
