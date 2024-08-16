@@ -44,7 +44,7 @@ public class UserEntity {
     @Column(name = "u_gender", nullable = false)
     private Boolean userGender;
 
-    @Column(name = "u_address", nullable = false, length = 225)
+    @Column(name = "u_address", nullable = false)
     private String userAddress;
 
     @Column(name = "u_created_at", nullable = false)
