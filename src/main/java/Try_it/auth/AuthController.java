@@ -10,16 +10,28 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.model.StorageType;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @RestController
@@ -27,10 +39,18 @@ import java.time.LocalDateTime;
 @Tag(name = "Auth", description = "로그인, 회원가입 관련 API(인가X)")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    @Value("${coolsms.api.key}")
+    private String apikey;
+    @Value("${coolsms.api.secret}")
+    private String apiSecret;
+    @Value(("${sender.phone}"))
+    private String senderPhone;
+
 
     private final AuthService authService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private DefaultMessageService messageService;
 
     @Autowired
     public AuthController(AuthService authService, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
@@ -38,6 +58,12 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
     }
+
+    @PostConstruct
+    public void init() {
+        this.messageService = NurigoApp.INSTANCE.initialize(apikey, apiSecret, "https://api.coolsms.co.kr");
+    }
+
 
     @Operation(summary = "회원가입", description = " requestBody : 아이디, 닉네임, 패스워드, 이름, 주소, 성별, 연락처, 이메일 ")
     @ApiResponses(value = {
@@ -121,37 +147,82 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "인증코드 보내기", description = "requestBody : 이메일(인가X)")
+    @Operation(summary = "메일 인증코드 보내기", description = "requestBody : 이메일(인가X)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "인증 코드 전송 성공"),
         @ApiResponse(responseCode = "400", description = "인증 코드 전송 실패")
     })
     @PostMapping("/email")
-    public ResponseEntity<ResDTO> sendEmail(@Valid @RequestBody EmailDTO emailDTO){
+    public ResponseEntity<ResDTO> sendEmail(@Valid @RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
-        authService.sendVerificationCode(emailDTO.getEmail(), verifiedAt);
+        authService.sendVerificationCode(verificationDTO.getEmail(), verifiedAt);
         return ResponseEntity.ok().body(ResDTO
             .builder()
             .statusCode(StatusCode.OK)
-            .data(emailDTO.getEmail())
+            .data(verificationDTO.getEmail())
             .message("인증 코드 전송 성공")
             .build()
         );
     }
 
-    @Operation(summary = "메일 인증", description = "requsetBody : 인증 코드(인가X)")
+    @Operation(summary = "메일 인증", description = "requestBody : 인증 코드(인가X)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "인증 성공"),
         @ApiResponse(responseCode = "400", description = "인증 실패")
     })
     @PostMapping("/verify-email")
-    public ResponseEntity<ResDTO> verifyEmail(@RequestBody EmailDTO emailDTO){
+    public ResponseEntity<ResDTO> verifyEmail(@RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
-        authService.verifyCode(emailDTO.getCode(), verifiedAt);
+        authService.verifyCode(verificationDTO.getCode(), verifiedAt);
         return ResponseEntity.ok().body(ResDTO
             .builder()
             .statusCode(StatusCode.OK)
             .message("메일 인증 성공")
+            .build()
+        );
+    }
+
+    @Operation(summary = "핸드폰 인증 코드 인증", description = "requestBody : phone 번호(인가X)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "메시지 전송 성공"),
+        @ApiResponse(responseCode = "400", description = "메시지 전송 실패")
+    })
+    @PostMapping("/phone")
+    public ResponseEntity<ResDTO> sendMessage(@Valid @RequestBody VerificationDTO verificationDTO)throws IOException{
+
+        LocalDateTime verifiedAt = LocalDateTime.now();
+        VerificationCode code = authService.sendPhoneVerificationCode(verifiedAt);
+
+        Message message = new Message();
+        message.setFrom(senderPhone);
+        message.setTo(verificationDTO.getPhone());
+        message.setText("[Try-it] - " + code.getCode() + "입니다.");
+
+        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+        System.out.println(response);
+
+        return ResponseEntity.ok().body(ResDTO
+            .builder()
+            .statusCode(StatusCode.OK)
+            .data(response)
+            .message("메시지 전송 성공")
+            .build()
+        );
+    }
+
+    @Operation(summary = "핸드폰 인증", description = "RequestBody : code(인가X)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "핸드폰 인증 성공"),
+        @ApiResponse(responseCode = "400", description = "핸드폰 인증 실패")
+    })
+    @PostMapping("/verify-phone")
+    public ResponseEntity<ResDTO> verifyPhone(@RequestBody VerificationDTO verificationDTO){
+        LocalDateTime verifiedAt = LocalDateTime.now();
+        authService.verifyCode(verificationDTO.getCode(), verifiedAt);
+        return ResponseEntity.ok().body(ResDTO
+            .builder()
+            .statusCode(StatusCode.OK)
+            .message("핸드폰 인증 성공")
             .build()
         );
     }

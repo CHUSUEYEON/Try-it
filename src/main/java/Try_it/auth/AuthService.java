@@ -93,6 +93,17 @@ public class AuthService {
         mailSender.send(mailMessage);
     }
 
+    public VerificationCode sendPhoneVerificationCode(LocalDateTime sentAt){
+        VerificationCode verificationCode = generateVerificationCode(sentAt);
+        verificationCodeRepository.save(verificationCode);
+        String code = verificationCode.generateCodeMessage();
+        return VerificationCode.builder()
+            .code(code)
+            .createAt(sentAt)
+            .expirationTimeInMinutes(EXPIRATION_IN_MINUTES)
+            .build();
+    }
+
     public VerificationCode generateVerificationCode(LocalDateTime sentAt){
         SecureRandom random = new SecureRandom();
         int code = 100000 + random.nextInt(900000);

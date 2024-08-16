@@ -44,8 +44,7 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2'
 
-	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
+	implementation 'net.nurigo:sdk:4.3.0'
 }
 
 tasks.named('test') {
