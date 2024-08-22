@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT u.userDeletedAt FROM UserEntity u WHERE u.userId = :userId")
     Timestamp findDeletedUserByUserId(String userId);
-    @Query("SELECT u.userIdx From UserEntity u WHERE u.userIsAdmin = true AND u.userIdx = :userIdx")
+
+    @Query("SELECT u From UserEntity u WHERE u.userIsAdmin = true AND u.userIdx = :userIdx")
     Optional<UserEntity> findAdminByUserIdx(@Param("userIdx") Long userIdx);
 }

@@ -35,4 +35,19 @@ public class GoodsDTO {
 
     @Schema(description = "상품 삭제일자", example = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", nullable = true)
     private Timestamp goodsDeletedAt;
+
+    @Schema(description = "상품 카테고리", example = "원피스")
+    private String categoryName;
+
+    public GoodsDTO(Long goodsIdx, String goodsName, String goodsFile, String goodsDescription, Integer goodsPrice, Timestamp goodsCreatedAt, Timestamp goodsUpdatedAt, Timestamp goodsDeletedAt, String categoryName) {
+        this.goodsIdx = goodsIdx;
+        this.goodsName = goodsName;
+        this.goodsFile = goodsFile;
+        this.goodsDescription = goodsDescription;
+        this.goodsPrice = goodsPrice;
+        this.goodsCreatedAt = goodsCreatedAt;
+        this.goodsUpdatedAt = goodsUpdatedAt;
+        this.goodsDeletedAt = goodsDeletedAt;
+        this.categoryName = categoryName;
+    }
 }

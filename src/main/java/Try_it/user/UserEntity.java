@@ -1,6 +1,11 @@
 package Try_it.user;
 
+import Try_it.cart.CartEntity;
+import Try_it.coupon.AlarmEntity;
+import Try_it.coupon.CouponUserMappingEntity;
+import Try_it.review.ReviewEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Getter
@@ -61,4 +67,19 @@ public class UserEntity {
     @Column(name = "u_is_admin", nullable = false)
     private Boolean userIsAdmin;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<AlarmEntity> alarm;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<CouponUserMappingEntity> mapping;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ReviewEntity> review;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<CartEntity> cart;
 }
