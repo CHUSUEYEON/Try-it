@@ -1,5 +1,6 @@
 package Try_it.goods.entity;
 
+import Try_it.category.CategoriesEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

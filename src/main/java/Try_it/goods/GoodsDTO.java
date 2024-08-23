@@ -18,8 +18,8 @@ public class GoodsDTO {
     @Schema(description = "상품 이름", example = "수영복")
     private String goodsName;
 
-    @Schema(description = "상품 사진", example = "http://sdfsdfk.sdf")
-    private String goodsFile;
+    @Schema(description = "상품 개수", example = "5")
+    private Integer goodsImgCount;
 
     @Schema(description = "상품 설명", example = "수영복입니다")
     private String goodsDescription;
@@ -39,10 +39,10 @@ public class GoodsDTO {
     @Schema(description = "상품 카테고리", example = "원피스")
     private String categoryName;
 
-    public GoodsDTO(Long goodsIdx, String goodsName, String goodsFile, String goodsDescription, Integer goodsPrice, Timestamp goodsCreatedAt, Timestamp goodsUpdatedAt, Timestamp goodsDeletedAt, String categoryName) {
+    public GoodsDTO(Long goodsIdx, String goodsName, Integer goodsImgCount, String goodsDescription, Integer goodsPrice, Timestamp goodsCreatedAt, Timestamp goodsUpdatedAt, Timestamp goodsDeletedAt, String categoryName) {
         this.goodsIdx = goodsIdx;
         this.goodsName = goodsName;
-        this.goodsFile = goodsFile;
+        this.goodsImgCount = goodsImgCount;
         this.goodsDescription = goodsDescription;
         this.goodsPrice = goodsPrice;
         this.goodsCreatedAt = goodsCreatedAt;

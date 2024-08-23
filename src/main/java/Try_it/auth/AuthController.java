@@ -196,7 +196,7 @@ public class AuthController {
         Message message = new Message();
         message.setFrom(senderPhone);
         message.setTo(verificationDTO.getPhone());
-        message.setText("[Try-it] - " + code.getCode() + "입니다.");
+        message.setText(code.getCode());
 
         SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
         System.out.println(response);

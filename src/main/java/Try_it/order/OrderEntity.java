@@ -48,6 +48,9 @@ public class OrderEntity {
     @CreationTimestamp
     private Timestamp orderCreatedAt;
 
+    @Column(name = "o_is_cancelled", nullable = false)
+    private Boolean orderIsCancelled;
+
     @ManyToOne
     @JoinColumn(name = "u_idx", nullable = false)
     @JsonBackReference

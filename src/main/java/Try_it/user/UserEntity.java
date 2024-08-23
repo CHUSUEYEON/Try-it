@@ -73,7 +73,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<CouponUserMappingEntity> mapping;
+    private List<CouponUserMappingEntity> coupons;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference

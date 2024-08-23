@@ -1,7 +1,9 @@
-package Try_it.goods;
+package Try_it.admin;
 
 import Try_it.common.dto.ResDTO;
+import Try_it.common.util.FileUpload;
 import Try_it.common.vo.StatusCode;
+import Try_it.goods.GoodsDTO;
 import Try_it.goods.entity.GoodsEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,10 +28,12 @@ import java.util.List;
 @Slf4j
 public class AdminGoodsController {
     final private AdminGoodsService goodsService;
+    private final FileUpload fileUpload;
 
     @Autowired
-    public AdminGoodsController(AdminGoodsService goodsService) {
+    public AdminGoodsController(AdminGoodsService goodsService, FileUpload fileUpload) {
         this.goodsService = goodsService;
+        this.fileUpload = fileUpload;
     }
 
     @Operation(summary = "상품 등록", description = "requestbody : 상품명, 설명, 가격, 사진 / 관리자 토큰 필요")
@@ -39,21 +43,22 @@ public class AdminGoodsController {
     })
     @PostMapping("/goods")
     public ResponseEntity<ResDTO> uploadGoods(@Valid @RequestPart GoodsDTO goodsDTO,
-                                              @RequestPart MultipartFile file,
+                                              @RequestPart List<MultipartFile> files,
                                               @AuthenticationPrincipal String userIdx
                                               ) throws Exception{
-        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, file, userIdx);
+        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, files, userIdx);
         GoodsDTO responseGoodsDTO = goodsDTO.builder()
             .goodsName(uploadedGoods.getGoodsName())
             .goodsDescription(uploadedGoods.getGoodsDescription())
             .goodsIdx(uploadedGoods.getGoodsIdx())
-            .goodsFile(uploadedGoods.getGoodsFile())
+            .goodsImgCount(uploadedGoods.getGoodsImgCount())
             .goodsCreatedAt(uploadedGoods.getGoodsCreatedAt())
             .goodsUpdatedAt(uploadedGoods.getGoodsUpdatedAt())
             .goodsDeletedAt(uploadedGoods.getGoodsDeletedAt())
             .goodsPrice(uploadedGoods.getGoodsPrice())
             .build();
-
+        List<String> fileNames = fileUpload.generateFileName(responseGoodsDTO, files);
+        fileUpload.uploadFile(files, fileNames);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)
            .data(responseGoodsDTO)
@@ -97,32 +102,31 @@ public class AdminGoodsController {
            .build());
     }
 
-//    @Operation(summary = "상품 조회", description = "관리자 토큰 필요, keywords로 검색 가능")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
-//        @ApiResponse(responseCode = "400", description = "상품 조회 실패")
-//    })
-//    @GetMapping("/goods")
-//    public ResponseEntity<ResDTO> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
-//                                            @RequestParam(name = "page", required = false) Integer page,
-//                                            @Parameter(name = "page", description = "정렬 기준", in = ParameterIn.QUERY, example = "name")
-//                                            @RequestParam(name = "page", required = false) String sort,
-//                                            @Parameter(name = "direction", description = "정렬 순서", in = ParameterIn.QUERY, example = "desc")
-//                                            @RequestParam(name = "direction", required = false) String direction,
-//                                            @Parameter(name = "keyword", description = "검색어", in = ParameterIn.QUERY, example = "수영복")
-//                                            @RequestParam(required = false) String keyword,
-//                                           @Parameter(name = "filter", description = "필터링 조건", in = ParameterIn.QUERY)
-//                                           @ModelAttribute GoodsFilterDTO filter,
-//                                           @AuthenticationPrincipal String userIdx) {
+    @Operation(summary = "상품 조회", description = "관리자 토큰 필요, keywords로 검색 가능")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "상품 조회 실패")
+    })
+    @GetMapping("/goods")
+    public ResponseEntity<ResDTO<Object>> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
+                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                            @Parameter(name = "page", description = "정렬 기준", in = ParameterIn.QUERY, example = "name")
+                                            @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
+                                            @Parameter(name = "direction", description = "정렬 순서", in = ParameterIn.QUERY, example = "desc")
+                                            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+                                            @Parameter(name = "keyword", description = "검색어", in = ParameterIn.QUERY, example = "수영복")
+                                            @RequestParam(value = "keyword", required = false) String keyword,
+                                           @AuthenticationPrincipal String userIdx) {
 //        if (keyword == null || keyword.isEmpty()) {
 //            if(page == null) page = 1;
-//            Page<GoodsDTO> goods = goodsService.getGoodsList(page, sort, direction, filter, userIdx);
-//            return ResponseEntity.ok().body(ResDTO
-//                .builder()
-//                .statusCode(StatusCode.OK)
-//                .data(goods)
-//                .message("상품 조회 성공")
-//                .build());
+        log.warn("keyword {}", keyword);
+            Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, userIdx, keyword);
+            return ResponseEntity.ok().body(ResDTO
+                .builder()
+                .statusCode(StatusCode.OK)
+                .data(goods)
+                .message("상품 조회 성공")
+                .build());
 //        } else {
 //            List<GoodsEntity> goods = goodsService.getGoods(keyword, userIdx);
 //            return ResponseEntity.ok().body(ResDTO
@@ -132,7 +136,7 @@ public class AdminGoodsController {
 //                .message("상품 조회 성공")
 //                .build());
 //        }
-//    }
+    }
     }
 
 

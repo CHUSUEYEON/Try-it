@@ -88,7 +88,7 @@ public class AuthService {
         VerificationCode verificationCode = generateVerificationCode(sentAt);
         verificationCodeRepository.save(verificationCode);
 
-        String text = verificationCode.generateCodeMessage();
+        String text = verificationCode.generateCodeMessage("email");
         mailMessage.setText(text);
         mailSender.send(mailMessage);
     }
@@ -96,7 +96,7 @@ public class AuthService {
     public VerificationCode sendPhoneVerificationCode(LocalDateTime sentAt){
         VerificationCode verificationCode = generateVerificationCode(sentAt);
         verificationCodeRepository.save(verificationCode);
-        String code = verificationCode.generateCodeMessage();
+        String code = verificationCode.generateCodeMessage("sms");
         return VerificationCode.builder()
             .code(code)
             .createAt(sentAt)

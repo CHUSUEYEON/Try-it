@@ -25,6 +25,7 @@ public class CouponEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cou_idx", updatable = false)
     private Long couponIdx;
+    //Todo: idx -> pk
 
     @Column(name = "cou_name", nullable = false, length = 100)
     private String couponName;
@@ -39,7 +40,7 @@ public class CouponEntity {
     private String couponCode;
 
     @Column(name = "cou_deadline", nullable = false)
-    private Integer couponDeadline;
+    private String couponDeadline;
 
     @Column(name = "cou_content", nullable = false)
     private String couponContent;
@@ -50,5 +51,5 @@ public class CouponEntity {
 
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<CouponUserMappingEntity> mapping;
+    private List<CouponUserMappingEntity> user;
 }

@@ -39,8 +39,8 @@ public class GoodsEntity {
     @Column(name = "g_description", nullable = false)
     private String goodsDescription;
 
-    @Column(name = "g_file", nullable = false)
-    private String goodsFile;
+    @Column(name = "g_img_cnt")
+    private Integer goodsImgCount;
 
     @Column(name = "g_price", nullable = false)
     private Integer goodsPrice;
@@ -58,7 +58,7 @@ public class GoodsEntity {
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<GoodsCategoriesMappingEntity> mapping;
+    private List<GoodsCategoriesMappingEntity> categories;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     @JsonManagedReference
