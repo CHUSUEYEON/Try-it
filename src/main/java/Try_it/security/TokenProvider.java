@@ -24,15 +24,15 @@ public class TokenProvider {
 
         return Jwts.builder()
             .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
-            .setSubject(String.valueOf(user.getUserIdx()))
+            .setSubject(String.valueOf(user.getUserPk()))
             .setIssuer(jwtProperties.getIssuer())
             .setExpiration(expiredDate)
             .setIssuedAt(new Date())
             .compact();
     }
 
-    //입력된 token 에서 payload 에 있는 userIdx 뽑기
-    public String validateAndGetUserIdx(String token){
+    //입력된 token 에서 payload 에 있는 userPk 뽑기
+    public String validateAndGetUserPk(String token){
         Claims claims = Jwts.parser()
             .setSigningKey(jwtProperties.getSecretKey())
             .parseClaimsJws(token)// 토큰이 위조되지 않았다면 payload 를 return

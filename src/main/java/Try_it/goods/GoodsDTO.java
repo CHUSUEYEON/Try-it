@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Builder
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 @Schema(description = "상품 정보")
 public class GoodsDTO {
     @Schema(description = "상품 인덱스", example = "1")
-    private Long goodsIdx;
+    private Long goodsPk;
 
     @Schema(description = "상품 이름", example = "수영복")
     private String goodsName;
@@ -37,10 +38,10 @@ public class GoodsDTO {
     private Timestamp goodsDeletedAt;
 
     @Schema(description = "상품 카테고리", example = "원피스")
-    private String categoryName;
+    private List categoryName;
 
-    public GoodsDTO(Long goodsIdx, String goodsName, Integer goodsImgCount, String goodsDescription, Integer goodsPrice, Timestamp goodsCreatedAt, Timestamp goodsUpdatedAt, Timestamp goodsDeletedAt, String categoryName) {
-        this.goodsIdx = goodsIdx;
+    public GoodsDTO(Long goodsPk, String goodsName, Integer goodsImgCount, String goodsDescription, Integer goodsPrice, Timestamp goodsCreatedAt, Timestamp goodsUpdatedAt, Timestamp goodsDeletedAt, List categoryName) {
+        this.goodsPk = goodsPk;
         this.goodsName = goodsName;
         this.goodsImgCount = goodsImgCount;
         this.goodsDescription = goodsDescription;

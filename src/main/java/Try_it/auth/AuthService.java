@@ -65,7 +65,7 @@ public class AuthService {
                 .userAddress(user.getUserAddress())
                 .userEmail(user.getUserEmail())
                 .userPhone(user.getUserPhone())
-                .userIdx(user.getUserIdx())
+                .userPk(user.getUserPk())
                 .userCreatedAt(user.getUserCreatedAt())
                 .userUpdatedAt(user.getUserUpdatedAt())
                 .userIsAdmin(user.getUserIsAdmin())

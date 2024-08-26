@@ -35,12 +35,12 @@ public class UserController {
     })
     @DeleteMapping("")
     public ResponseEntity<ResDTO> deleteUser(@Valid @RequestBody UserDTO userDTO,
-                                             @AuthenticationPrincipal String userIdx
+                                             @AuthenticationPrincipal String userPk
     ){
-        UserEntity user = userService.deleteUser(Long.valueOf(userIdx), userDTO.getUserPassword());
+        UserEntity user = userService.deleteUser(Long.valueOf(userPk), userDTO.getUserPassword());
 
         final UserDTO responseUserDTO = UserDTO.builder()
-            .userIdx(user.getUserIdx())
+            .userPk(user.getUserPk())
             .userName(user.getUserName())
             .userId(user.getUserId())
             .userCreatedAt(user.getUserCreatedAt())

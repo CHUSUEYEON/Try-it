@@ -20,16 +20,16 @@ import lombok.NoArgsConstructor;
 public class FavoritesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fav_idx", updatable = false)
-    private Long favIdx;
+    @Column(name = "fav_pk", updatable = false)
+    private Long favPk;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "g_idx", nullable = false)
+    @JoinColumn(name = "g_pk", nullable = false)
     @JsonBackReference
     private GoodsEntity goods;
 }

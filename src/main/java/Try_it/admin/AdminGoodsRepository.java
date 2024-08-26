@@ -18,7 +18,7 @@ public interface AdminGoodsRepository extends JpaRepository<GoodsEntity, Long>{
 
     @Query("""
         SELECT g FROM GoodsEntity g
-        LEFT JOIN g.categories gc
+        LEFT JOIN g.category gc
         LEFT JOIN gc.category c
         WHERE LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))

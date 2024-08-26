@@ -34,7 +34,7 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "%s_%d_%d%s", goodsDTO.getGoodsName(), goodsDTO.getGoodsIdx(), i, extension
+                "%s_%d_%d%s", goodsDTO.getGoodsName(), goodsDTO.getGoodsPk(), i, extension
                 );
             fileNames.add(formattedFileName);
         }

@@ -22,8 +22,8 @@ public class AlarmEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "a_idx", updatable = false)
-    private Long alarmIdx;
+    @Column(name = "a_pk", updatable = false)
+    private Long alarmPk;
 
     @Column(name = "a_content", nullable = false)
     private String alarmContent;
@@ -35,7 +35,7 @@ public class AlarmEntity {
     private Boolean alarmIsRead;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 

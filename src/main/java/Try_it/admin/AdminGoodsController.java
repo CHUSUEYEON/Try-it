@@ -1,5 +1,6 @@
 package Try_it.admin;
 
+import Try_it.category.CategoryDTO;
 import Try_it.common.dto.ResDTO;
 import Try_it.common.util.FileUpload;
 import Try_it.common.vo.StatusCode;
@@ -43,19 +44,21 @@ public class AdminGoodsController {
     })
     @PostMapping("/goods")
     public ResponseEntity<ResDTO> uploadGoods(@Valid @RequestPart GoodsDTO goodsDTO,
+                                              @RequestPart CategoryDTO categoryDTO,
                                               @RequestPart List<MultipartFile> files,
-                                              @AuthenticationPrincipal String userIdx
+                                              @AuthenticationPrincipal String userPk
                                               ) throws Exception{
-        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, files, userIdx);
+        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, categoryDTO, files, userPk);
         GoodsDTO responseGoodsDTO = goodsDTO.builder()
             .goodsName(uploadedGoods.getGoodsName())
             .goodsDescription(uploadedGoods.getGoodsDescription())
-            .goodsIdx(uploadedGoods.getGoodsIdx())
+            .goodsPk(uploadedGoods.getGoodsPk())
             .goodsImgCount(uploadedGoods.getGoodsImgCount())
             .goodsCreatedAt(uploadedGoods.getGoodsCreatedAt())
             .goodsUpdatedAt(uploadedGoods.getGoodsUpdatedAt())
             .goodsDeletedAt(uploadedGoods.getGoodsDeletedAt())
             .goodsPrice(uploadedGoods.getGoodsPrice())
+            .categoryName(uploadedGoods.getCategory())
             .build();
         List<String> fileNames = fileUpload.generateFileName(responseGoodsDTO, files);
         fileUpload.uploadFile(files, fileNames);
@@ -71,13 +74,13 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 수정 성공"),
         @ApiResponse(responseCode = "400", description = "상품 수정 실패")
     })
-    @PatchMapping("/goods/{goodsIdx}")
+    @PatchMapping("/goods/{goodsPk}")
     public ResponseEntity<ResDTO<Object>> updateGoods(@Valid @RequestPart GoodsDTO goodsDTO,
                                               @RequestPart(required = false) MultipartFile file,
-                                              @PathVariable Long goodsIdx,
-                                              @AuthenticationPrincipal String userIdx
+                                              @PathVariable Long goodsPk,
+                                              @AuthenticationPrincipal String userPk
                                               ) throws Exception{
-        GoodsEntity updatedGoods = goodsService.updateGoods(goodsDTO, file, goodsIdx, userIdx);
+        GoodsEntity updatedGoods = goodsService.updateGoods(goodsDTO, file, goodsPk, userPk);
 
         return ResponseEntity.ok().body(ResDTO.builder()
             .statusCode(StatusCode.OK)
@@ -91,9 +94,9 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 삭제 성공"),
         @ApiResponse(responseCode = "400", description = "상품 삭제 실패")
     })
-    @DeleteMapping("/goods/{goodsIdx}")
-    public ResponseEntity<ResDTO> deleteGoods(@PathVariable Long goodsIdx, @AuthenticationPrincipal String userIdx){
-        GoodsEntity deletedGoods = goodsService.delete(goodsIdx, userIdx);
+    @DeleteMapping("/goods/{goodsPk}")
+    public ResponseEntity<ResDTO> deleteGoods(@PathVariable Long goodsPk, @AuthenticationPrincipal String userPk){
+        GoodsEntity deletedGoods = goodsService.delete(goodsPk, userPk);
         return ResponseEntity.ok().body(ResDTO
             .builder()
            .statusCode(StatusCode.OK)
@@ -116,11 +119,11 @@ public class AdminGoodsController {
                                             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
                                             @Parameter(name = "keyword", description = "검색어", in = ParameterIn.QUERY, example = "수영복")
                                             @RequestParam(value = "keyword", required = false) String keyword,
-                                           @AuthenticationPrincipal String userIdx) {
+                                           @AuthenticationPrincipal String userPk) {
 //        if (keyword == null || keyword.isEmpty()) {
 //            if(page == null) page = 1;
         log.warn("keyword {}", keyword);
-            Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, userIdx, keyword);
+            Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, userPk, keyword);
             return ResponseEntity.ok().body(ResDTO
                 .builder()
                 .statusCode(StatusCode.OK)
@@ -128,7 +131,7 @@ public class AdminGoodsController {
                 .message("상품 조회 성공")
                 .build());
 //        } else {
-//            List<GoodsEntity> goods = goodsService.getGoods(keyword, userIdx);
+//            List<GoodsEntity> goods = goodsService.getGoods(keyword, userPk);
 //            return ResponseEntity.ok().body(ResDTO
 //                .builder()
 //                .statusCode(StatusCode.OK)

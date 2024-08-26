@@ -19,16 +19,16 @@ import lombok.NoArgsConstructor;
 public class CouponUserMappingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cou_user_idx", updatable = false)
-    private Long couUserIdx;
+    @Column(name = "cou_user_pk", updatable = false)
+    private Long couUserPk;
 
     @ManyToOne
-    @JoinColumn(name = "cou_idx", nullable = false)
+    @JoinColumn(name = "cou_pk", nullable = false)
     @JsonBackReference
     private CouponEntity coupon;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 }

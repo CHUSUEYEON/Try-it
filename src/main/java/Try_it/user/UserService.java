@@ -20,8 +20,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity deleteUser(final Long userIdx, final String password){
-        UserEntity user = userRepository.findByUserIdx(userIdx)
+    public UserEntity deleteUser(final Long userPk, final String password){
+        UserEntity user = userRepository.findByUserPk(userPk)
            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         if(user!= null && passwordEncoder.matches(password, user.getUserPassword())){

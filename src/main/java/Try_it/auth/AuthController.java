@@ -89,7 +89,7 @@ public class AuthController {
         UserDTO responseUserDTO = userDTO.builder()
             .userId(registeredUser.getUserId())
             .userName(registeredUser.getUserName())
-            .userIdx(registeredUser.getUserIdx())
+            .userPk(registeredUser.getUserPk())
             .userAddress(registeredUser.getUserAddress())
             .userGender(registeredUser.getUserGender())
             .userPhone(registeredUser.getUserPhone())
@@ -121,7 +121,7 @@ public class AuthController {
             String token = tokenProvider.create(user);
             final UserDTO responseUserDTO = UserDTO.builder()
                 .userId(user.getUserId())
-                .userIdx(user.getUserIdx())
+                .userPk(user.getUserPk())
                 .userName(user.getUserName())
                 .userAddress(user.getUserAddress())
                 .userGender(user.getUserGender())

@@ -31,9 +31,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if(token != null && !token.equalsIgnoreCase("null")){
                 //null Null NULL 대소문자 무시하고 비교
-                String userIdx =tokenProvider.validateAndGetUserIdx(token);
+                String userPk =tokenProvider.validateAndGetUserPk(token);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userIdx, null, AuthorityUtils.NO_AUTHORITIES);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userPk, null, AuthorityUtils.NO_AUTHORITIES);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }catch(Exception e){

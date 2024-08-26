@@ -21,8 +21,8 @@ import java.util.List;
 public class CategoriesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "cate_idx", updatable = false)
-    private Long categoryIdx;
+    @Column(name= "cate_pk", updatable = false)
+    private Long categoryPk;
 
     @Column(name = "cate_name", nullable = false, length = 50)
     private String categoryName;

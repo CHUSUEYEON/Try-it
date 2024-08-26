@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 public class CartEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "c_idx", updatable = false)
-    private Long cartIdx;
+    @Column(name = "c_pk", updatable = false)
+    private Long cartPk;
 
     @Column(name = "c_amount", nullable = false)
     private Integer cartAmount;
@@ -30,12 +30,12 @@ public class CartEntity {
     private Boolean cartIsPaid;
 
     @ManyToOne
-    @JoinColumn(name = "g_idx", nullable = false)
+    @JoinColumn(name = "g_pk", nullable = false)
     @JsonBackReference
     private GoodsEntity goods;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 }

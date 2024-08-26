@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Schema(description = "회원 정보")
 public class UserDTO {
     @Schema(description = "회원 인덱스", example = "1")
-    private Long userIdx;
+    private Long userPk;
 
     @Schema(description = "회원 아이디", example = "chuchu")
 //    @Pattern(regexp = "(?![0-9])(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z][a-zA-Z0-9].{3,19}", message = "아이디는 숫자로 시작하지 않는 길이 4~20자, 영어 대소문자, 숫자로 이루어진 문자열이어야 합니다.")

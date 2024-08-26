@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class PayEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "p_idx", updatable = false)
-    private Long payIdx;
+    @Column(name = "p_pk", updatable = false)
+    private Long payPk;
 
     @Column(name = "r_file", nullable = false, length = 30)
     private String payCode;
@@ -29,12 +29,12 @@ public class PayEntity {
     private Boolean payIsRefunded;
 
     @ManyToOne
-    @JoinColumn(name = "g_idx", nullable = false)
+    @JoinColumn(name = "g_pk", nullable = false)
     @JsonBackReference
     private GoodsEntity goods;
 
     @ManyToOne
-    @JoinColumn(name = "o_idx", nullable = false)
+    @JoinColumn(name = "o_pk", nullable = false)
     @JsonBackReference
     private OrderEntity order;
 }

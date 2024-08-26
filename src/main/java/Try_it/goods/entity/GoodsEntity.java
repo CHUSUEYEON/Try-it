@@ -25,13 +25,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@SQLDelete(sql = "UPDATE goods SET g_deleted_at = now() WHERE g_idx = ?")
+@SQLDelete(sql = "UPDATE goods SET g_deleted_at = now() WHERE g_pk = ?")
 @Table(name = "goods")
 public class GoodsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "g_idx", updatable = false)
-    private Long goodsIdx;
+    @Column(name = "g_pk", updatable = false)
+    private Long goodsPk;
 
     @Column(name = "g_name", nullable = false, length = 100)
     private String goodsName;
@@ -58,7 +58,7 @@ public class GoodsEntity {
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<GoodsCategoriesMappingEntity> categories;
+    private List<GoodsCategoriesMappingEntity> category;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
     @JsonManagedReference

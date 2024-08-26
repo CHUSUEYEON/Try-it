@@ -19,16 +19,16 @@ import lombok.NoArgsConstructor;
 public class GoodsCategoriesMappingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "g_cate_idx", updatable = false)
-    private Long goodsCateIdx;
+    @Column(name = "g_cate_pk", updatable = false)
+    private Long goodsCatePk;
 
     @ManyToOne
-    @JoinColumn(name = "cate_idx", nullable = false)
+    @JoinColumn(name = "cate_pk", nullable = false)
     @JsonBackReference
     private CategoriesEntity category;
 
     @ManyToOne
-    @JoinColumn(name = "g_idx", nullable = false)
+    @JoinColumn(name = "g_pk", nullable = false)
     @JsonBackReference
     private GoodsEntity goods;
 }

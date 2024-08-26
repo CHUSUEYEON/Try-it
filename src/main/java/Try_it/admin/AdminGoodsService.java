@@ -1,7 +1,11 @@
 package Try_it.admin;
 
+import Try_it.category.CategoriesEntity;
+import Try_it.category.CategoryDTO;
+import Try_it.category.CategoryRepository;
 import Try_it.common.util.FileUpload;
 import Try_it.goods.GoodsDTO;
+import Try_it.goods.entity.GoodsCategoriesMappingEntity;
 import Try_it.goods.entity.GoodsEntity;
 import Try_it.user.UserEntity;
 import Try_it.user.UserRepository;
@@ -17,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,13 +31,15 @@ import java.util.UUID;
 public class AdminGoodsService {
     private final AdminGoodsRepository goodsRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final FileUpload fileUpload;
 
     @Autowired
-    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload) {
+    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload, CategoryRepository categoryRepository) {
         this.goodsRepository = goodsRepository;
         this.userRepository = userRepository;
         this.fileUpload = fileUpload;
+        this.categoryRepository = categoryRepository;
     }
 
     @Autowired
@@ -43,13 +51,16 @@ public class AdminGoodsService {
     private static final String RV_DIR = "img/goods/";
 
     public GoodsEntity createGoods(final GoodsDTO goodsDTO,
+                                   final CategoryDTO categoryDTO,
                                    final List<MultipartFile> files,
-                                   final String userIdx
+                                   final String userPk
                                    ) throws Exception{
         // 토큰 확왼
-        userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+        userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 
+        CategoriesEntity category = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
+            .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
 
         GoodsEntity newGoods = GoodsEntity.builder()
             .goodsName(goodsDTO.getGoodsName())
@@ -57,19 +68,27 @@ public class AdminGoodsService {
             .goodsPrice(goodsDTO.getGoodsPrice())
             .goodsImgCount(files.size())
             .goodsCreatedAt(goodsDTO.getGoodsCreatedAt())
+            .category(new ArrayList<>())
             .build();
+
+        GoodsCategoriesMappingEntity mapping = GoodsCategoriesMappingEntity.builder()
+            .goods(newGoods)
+            .category(category)
+            .build();
+        newGoods.getCategory().add(mapping);
+
         return goodsRepository.save(newGoods);
     }
 
     public GoodsEntity updateGoods(final GoodsDTO goodsDTO,
                                    MultipartFile file,
-                                   final Long goodsIdx,
-                                   final String userIdx
+                                   final Long goodsPk,
+                                   final String userPk
                                    ) throws Exception{
 
-        userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+        userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
-        GoodsEntity goods = goodsRepository.findById(goodsIdx).orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
+        GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
 
         if(file != null && !file.isEmpty()){
         String fileUrl = createFilename(file);
@@ -77,7 +96,7 @@ public class AdminGoodsService {
             .goodsName(goodsDTO.getGoodsName())
             .goodsPrice(goodsDTO.getGoodsPrice())
             .goodsImgCount(goodsDTO.getGoodsImgCount())
-            .goodsIdx(goods.getGoodsIdx())
+            .goodsPk(goods.getGoodsPk())
             .goodsCreatedAt(goods.getGoodsCreatedAt())
             .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
             .goodsDescription(goodsDTO.getGoodsDescription())
@@ -87,7 +106,7 @@ public class AdminGoodsService {
             GoodsEntity updatedGoods = GoodsEntity.builder()
                .goodsName(goodsDTO.getGoodsName())
                .goodsPrice(goodsDTO.getGoodsPrice())
-               .goodsIdx(goods.getGoodsIdx())
+               .goodsPk(goods.getGoodsPk())
                 .goodsImgCount(goods.getGoodsImgCount())
                .goodsCreatedAt(goods.getGoodsCreatedAt())
                .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
@@ -99,7 +118,7 @@ public class AdminGoodsService {
 
     public String createFilename(MultipartFile file) throws Exception{
         //Todo : db에 g_file이 아니라 g_img_cnt (상품 사진 개수로 int 저장)하고, 경로는 저장하지 않는다.
-        //Todo : 파일 이름 ex) imggggg_0_1 : 0번(idx)를 가진 굿즈의 두 번째 imggggg
+        //Todo : 파일 이름 ex) imggggg_0_1 : 0번(pk)를 가진 굿즈의 두 번째 imggggg
         UUID uuid = UUID.randomUUID();
         String fileName = RV_DIR + uuid + "_" + file.getOriginalFilename();
         String fileUrl = "https://" + cloudfront + "/" + fileName;
@@ -111,10 +130,10 @@ public class AdminGoodsService {
         return fileUrl;
     }
 
-    public GoodsEntity delete(final Long goodsIdx, final String userIdx){
-        GoodsEntity goods = goodsRepository.findById(goodsIdx)
+    public GoodsEntity delete(final Long goodsPk, final String userPk){
+        GoodsEntity goods = goodsRepository.findById(goodsPk)
             .orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
-        UserEntity user = userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 
         if (user != null && goods != null) {
@@ -123,8 +142,8 @@ public class AdminGoodsService {
         }else throw new RuntimeException("상품 삭제 실패");
     }
 
-    public Page<GoodsEntity> getGoodsList(final int page, final String sort, final String direction, final String userIdx, final String keyword){
-        userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+    public Page<GoodsEntity> getGoodsList(final int page, final String sort, final String direction, final String userPk, final String keyword){
+        userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
@@ -145,8 +164,8 @@ public class AdminGoodsService {
         }
 
     }
-//    public Page<GoodsDTO> getGoodsList(final int page, final String sort, final String direction, final String userIdx){
-//        userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+//    public Page<GoodsDTO> getGoodsList(final int page, final String sort, final String direction, final String userPk){
+//        userRepository.findAdminByUserPk(Long.valueOf(userPk))
 //            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 //
 //        Pageable pageable = PageRequest.of(page -1, Pagination.PAGE_SIZE);
@@ -158,8 +177,8 @@ public class AdminGoodsService {
 //        return goods;
 //    }
 
-//    public List<GoodsEntity> getGoods(final String keyword, final String userIdx) {
-//        userRepository.findAdminByUserIdx(Long.valueOf(userIdx))
+//    public List<GoodsEntity> getGoods(final String keyword, final String userPk) {
+//        userRepository.findAdminByUserPk(Long.valueOf(userPk))
 //            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 //
 //        List<GoodsEntity> goods = goodsRepository.findGoodsByKeyword(keyword);

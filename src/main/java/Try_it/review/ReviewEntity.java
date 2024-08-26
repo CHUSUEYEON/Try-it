@@ -21,13 +21,13 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@SQLDelete(sql = "UPDATE review SET r_deleted_at = now() WHERE r_idx = ?")
+@SQLDelete(sql = "UPDATE review SET r_deleted_at = now() WHERE r_pk = ?")
 @Table(name = "review")
 public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "r_idx", updatable = false)
-    private Long reviewIdx;
+    @Column(name = "r_pk", updatable = false)
+    private Long reviewPk;
 
     @Column(name = "r_content", nullable = false)
     private String reviewContent;
@@ -50,12 +50,12 @@ public class ReviewEntity {
     private Timestamp reviewDeletedAt;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "g_idx", nullable = false)
+    @JoinColumn(name = "g_pk", nullable = false)
     @JsonBackReference
     private GoodsEntity goods;
 

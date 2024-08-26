@@ -26,8 +26,8 @@ import java.util.List;
 public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "o_idx", updatable = false)
-    private Long orderIdx;
+    @Column(name = "o_pk", updatable = false)
+    private Long orderPk;
 
     @Column(name = "o_total", nullable = false)
     private Integer orderTotal;
@@ -52,12 +52,12 @@ public class OrderEntity {
     private Boolean orderIsCancelled;
 
     @ManyToOne
-    @JoinColumn(name = "u_idx", nullable = false)
+    @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "c_idx", nullable = false)
+    @JoinColumn(name = "c_pk", nullable = false)
     @JsonBackReference
     private CouponEntity coupon;
 

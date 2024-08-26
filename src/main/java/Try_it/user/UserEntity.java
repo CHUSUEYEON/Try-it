@@ -24,13 +24,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@SQLDelete(sql = "UPDATE user SET u_deleted_at = now() WHERE u_idx = ?")
+@SQLDelete(sql = "UPDATE user SET u_deleted_at = now() WHERE u_pk = ?")
 @Table(name = "user")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "u_idx", updatable = false)
-    private Long userIdx;
+    @Column(name = "u_pk", updatable = false)
+    private Long userPk;
 
     @Column(name = "u_id", nullable = false, length = 20)
     private String userId;
