@@ -1,6 +1,6 @@
-package Try_it.goods.entity;
+package Try_it.category;
 
-import Try_it.category.CategoriesEntity;
+import Try_it.goods.GoodsEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

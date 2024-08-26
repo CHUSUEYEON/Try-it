@@ -1,6 +1,5 @@
 package Try_it.goods;
 
-import Try_it.goods.entity.GoodsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package Try_it.cart;
 
-import Try_it.goods.entity.GoodsEntity;
+import Try_it.goods.GoodsEntity;
 import Try_it.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -1,12 +1,9 @@
 package Try_it.admin;
 
-import Try_it.category.CategoriesEntity;
-import Try_it.category.CategoryDTO;
-import Try_it.category.CategoryRepository;
+import Try_it.category.*;
 import Try_it.common.util.FileUpload;
 import Try_it.goods.GoodsDTO;
-import Try_it.goods.entity.GoodsCategoriesMappingEntity;
-import Try_it.goods.entity.GoodsEntity;
+import Try_it.goods.GoodsEntity;
 import Try_it.user.UserEntity;
 import Try_it.user.UserRepository;
 import com.amazonaws.services.s3.AmazonS3;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,14 +28,16 @@ public class AdminGoodsService {
     private final AdminGoodsRepository goodsRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final GoodsCategoriesMappingRepository goodsCategoriesMappingRepository;
     private final FileUpload fileUpload;
 
     @Autowired
-    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload, CategoryRepository categoryRepository) {
+    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload, CategoryRepository categoryRepository, GoodsCategoriesMappingRepository goodsCategoriesMappingRepository) {
         this.goodsRepository = goodsRepository;
         this.userRepository = userRepository;
         this.fileUpload = fileUpload;
         this.categoryRepository = categoryRepository;
+        this.goodsCategoriesMappingRepository = goodsCategoriesMappingRepository;
     }
 
     @Autowired
@@ -81,7 +79,8 @@ public class AdminGoodsService {
     }
 
     public GoodsEntity updateGoods(final GoodsDTO goodsDTO,
-                                   MultipartFile file,
+                                   List<CategoryDTO> categoryDTOs,
+                                   List<MultipartFile> files,
                                    final Long goodsPk,
                                    final String userPk
                                    ) throws Exception{
@@ -90,45 +89,137 @@ public class AdminGoodsService {
             .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
         GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
 
-        if(file != null && !file.isEmpty()){
-        String fileUrl = createFilename(file);
-        GoodsEntity updatedGoodsWithPhoto = GoodsEntity.builder()
+// 파일 업로드 처리
+        if (files != null && !files.isEmpty()) {
+            List<String> fileNames = fileUpload.generateFileName(goodsDTO, files);
+            fileUpload.uploadFile(files, fileNames);
+        }
+
+        // 카테고리 업데이트
+        List<GoodsCategoriesMappingEntity> newCategories = new ArrayList<>();
+        if (categoryDTOs != null) {
+            // 기존 카테고리 매핑 삭제
+            List<GoodsCategoriesMappingEntity> existMappings = goodsCategoriesMappingRepository.findByGoods(goods);
+            goodsCategoriesMappingRepository.deleteAll(existMappings);
+
+            // 새 카테고리 추가
+            for (CategoryDTO categoryDTO : categoryDTOs) {
+                CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
+                    .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
+
+                GoodsCategoriesMappingEntity newMapping = GoodsCategoriesMappingEntity.builder()
+                    .goods(goods)
+                    .category(newCategory)
+                    .build();
+
+                goodsCategoriesMappingRepository.save(newMapping);
+                newCategories.add(newMapping);
+            }
+        }
+
+        // 상품 업데이트
+        GoodsEntity updatedGoods = GoodsEntity.builder()
             .goodsName(goodsDTO.getGoodsName())
             .goodsPrice(goodsDTO.getGoodsPrice())
-            .goodsImgCount(goodsDTO.getGoodsImgCount())
+            .goodsImgCount((files != null && !files.isEmpty()) ? files.size() : (goods.getGoodsImgCount() != null ? goods.getGoodsImgCount() : 0))
             .goodsPk(goods.getGoodsPk())
             .goodsCreatedAt(goods.getGoodsCreatedAt())
             .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
             .goodsDescription(goodsDTO.getGoodsDescription())
+            .category(newCategories.isEmpty() ? goods.getCategory() : newCategories)
             .build();
-        return goodsRepository.save(updatedGoodsWithPhoto);
-        }else{
-            GoodsEntity updatedGoods = GoodsEntity.builder()
-               .goodsName(goodsDTO.getGoodsName())
-               .goodsPrice(goodsDTO.getGoodsPrice())
-               .goodsPk(goods.getGoodsPk())
-                .goodsImgCount(goods.getGoodsImgCount())
-               .goodsCreatedAt(goods.getGoodsCreatedAt())
-               .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
-               .goodsDescription(goodsDTO.getGoodsDescription())
-               .build();
-            return goodsRepository.save(updatedGoods);
-        }
+
+        return goodsRepository.save(updatedGoods);
     }
 
-    public String createFilename(MultipartFile file) throws Exception{
-        //Todo : db에 g_file이 아니라 g_img_cnt (상품 사진 개수로 int 저장)하고, 경로는 저장하지 않는다.
-        //Todo : 파일 이름 ex) imggggg_0_1 : 0번(pk)를 가진 굿즈의 두 번째 imggggg
-        UUID uuid = UUID.randomUUID();
-        String fileName = RV_DIR + uuid + "_" + file.getOriginalFilename();
-        String fileUrl = "https://" + cloudfront + "/" + fileName;
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
-        amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
 
-        return fileUrl;
-    }
+//Todo : 상품 수정(카테고리 추가한 부분) 트러블 슈팅 작성하기
+
+//        if(files != null && !files.isEmpty()){
+//            List<String> fileNames = fileUpload.generateFileName(goodsDTO, files);
+//            fileUpload.uploadFile(files, fileNames);
+//            if(categoryDTOs == null){
+//                GoodsEntity updatedGoodsWithPhoto = GoodsEntity.builder()
+//                    .goodsName(goodsDTO.getGoodsName())
+//                    .goodsPrice(goodsDTO.getGoodsPrice())
+//                    .goodsImgCount(goodsDTO.getGoodsImgCount())
+//                    .goodsPk(goods.getGoodsPk())
+//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
+//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
+//                    .goodsDescription(goodsDTO.getGoodsDescription())
+//                    .category(goods.getCategory())
+//                    .build();
+//                return goodsRepository.save(updatedGoodsWithPhoto);
+//            }else{
+//                for(CategoryDTO categoryDTO : categoryDTOs) {
+//                    CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
+//                        .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
+//
+//
+//                GoodsCategoriesMappingEntity newMapping = GoodsCategoriesMappingEntity.builder()
+//                    .goods(goods)
+//                    .category(newCategory)
+//                    .build();
+//
+//                goodsCategoriesMappingRepository.save(newMapping);
+//
+//                GoodsEntity updatedGoodsWithPhoto = GoodsEntity.builder()
+//                    .goodsName(goodsDTO.getGoodsName())
+//                    .goodsPrice(goodsDTO.getGoodsPrice())
+//                    .goodsImgCount(goodsDTO.getGoodsImgCount())
+//                    .goodsPk(goods.getGoodsPk())
+//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
+//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
+//                    .goodsDescription(goodsDTO.getGoodsDescription())
+//                    .category(new ArrayList<>())
+//                    .build();
+//                updatedGoodsWithPhoto.getCategory().add(newMapping);
+//
+//                return goodsRepository.save(updatedGoodsWithPhoto);
+//            }}
+//        }else{
+//            if(categoryDTOs == null){
+//                GoodsEntity updatedGoods = GoodsEntity.builder()
+//                   .goodsName(goodsDTO.getGoodsName())
+//                   .goodsPrice(goodsDTO.getGoodsPrice())
+//                   .goodsPk(goods.getGoodsPk())
+//                    .goodsImgCount(goods.getGoodsImgCount())
+//                   .goodsCreatedAt(goods.getGoodsCreatedAt())
+//                   .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
+//                   .goodsDescription(goodsDTO.getGoodsDescription())
+//                    .category(goods.getCategory())
+//                   .build();
+//                return goodsRepository.save(updatedGoods);
+//            }else{
+//                for(CategoryDTO categoryDTO : categoryDTOs) {
+//                    CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
+//                        .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
+//
+//
+//                    GoodsCategoriesMappingEntity newMapping = GoodsCategoriesMappingEntity.builder()
+//                        .goods(goods)
+//                        .category(newCategory)
+//                        .build();
+//
+//                    goodsCategoriesMappingRepository.save(newMapping);
+//
+//                GoodsEntity updatedGoods = GoodsEntity.builder()
+//                    .goodsName(goodsDTO.getGoodsName())
+//                    .goodsPrice(goodsDTO.getGoodsPrice())
+//                    .goodsPk(goods.getGoodsPk())
+//                    .goodsImgCount(goods.getGoodsImgCount())
+//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
+//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
+//                    .goodsDescription(goodsDTO.getGoodsDescription())
+//                    .category(new ArrayList<>())
+//                    .build();
+//
+//                    updatedGoods.getCategory().add(newMapping);
+//                    return goodsRepository.save(updatedGoods);
+//                }
+//            }
+//        }
+//        return null;
 
     public GoodsEntity delete(final Long goodsPk, final String userPk){
         GoodsEntity goods = goodsRepository.findById(goodsPk)

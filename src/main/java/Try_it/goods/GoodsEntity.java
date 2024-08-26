@@ -1,6 +1,7 @@
-package Try_it.goods.entity;
+package Try_it.goods;
 
 import Try_it.cart.CartEntity;
+import Try_it.category.GoodsCategoriesMappingEntity;
 import Try_it.favorites.FavoritesEntity;
 import Try_it.order.OrderListEntity;
 import Try_it.order.PayEntity;

@@ -5,7 +5,7 @@ import Try_it.common.dto.ResDTO;
 import Try_it.common.util.FileUpload;
 import Try_it.common.vo.StatusCode;
 import Try_it.goods.GoodsDTO;
-import Try_it.goods.entity.GoodsEntity;
+import Try_it.goods.GoodsEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -75,12 +75,13 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "400", description = "상품 수정 실패")
     })
     @PatchMapping("/goods/{goodsPk}")
-    public ResponseEntity<ResDTO<Object>> updateGoods(@Valid @RequestPart GoodsDTO goodsDTO,
-                                              @RequestPart(required = false) MultipartFile file,
+    public ResponseEntity<ResDTO<Object>> updateGoods(@Valid @RequestPart(required = false) GoodsDTO goodsDTO,
+                                              @RequestPart(required = false) List<CategoryDTO> categoryDTOs,
+                                              @RequestPart(required = false) List<MultipartFile> files,
                                               @PathVariable Long goodsPk,
                                               @AuthenticationPrincipal String userPk
                                               ) throws Exception{
-        GoodsEntity updatedGoods = goodsService.updateGoods(goodsDTO, file, goodsPk, userPk);
+        GoodsEntity updatedGoods = goodsService.updateGoods(goodsDTO, categoryDTOs, files, goodsPk, userPk);
 
         return ResponseEntity.ok().body(ResDTO.builder()
             .statusCode(StatusCode.OK)

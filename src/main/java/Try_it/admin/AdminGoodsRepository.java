@@ -1,6 +1,6 @@
 package Try_it.admin;
 
-import Try_it.goods.entity.GoodsEntity;
+import Try_it.goods.GoodsEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
