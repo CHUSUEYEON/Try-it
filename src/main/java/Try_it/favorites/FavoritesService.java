@@ -7,6 +7,8 @@ import Try_it.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class FavoritesService {
@@ -52,5 +54,15 @@ public class FavoritesService {
 
         favoritesRepository.delete(favorite);
         return favorite;
+    }
+
+    public List<FavoritesEntity> get(final String userPk){
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
+
+        List<FavoritesEntity> favorites = favoritesRepository.findAllByUserPk(user.getUserPk());
+        if(favorites == null) throw new IllegalStateException("추가된 찜이 없습니다.");
+
+        return favorites;
     }
 }
