@@ -44,11 +44,11 @@ public class AdminGoodsController {
     })
     @PostMapping("/goods")
     public ResponseEntity<ResDTO> uploadGoods(@Valid @RequestPart GoodsDTO goodsDTO,
-                                              @RequestPart CategoryDTO categoryDTO,
+                                              @RequestPart List<CategoryDTO> categoryDTOs,
                                               @RequestPart List<MultipartFile> files,
                                               @AuthenticationPrincipal String userPk
                                               ) throws Exception{
-        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, categoryDTO, files, userPk);
+        GoodsEntity uploadedGoods = goodsService.createGoods(goodsDTO, categoryDTOs, files, userPk);
         GoodsDTO responseGoodsDTO = goodsDTO.builder()
             .goodsName(uploadedGoods.getGoodsName())
             .goodsDescription(uploadedGoods.getGoodsDescription())

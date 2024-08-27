@@ -49,33 +49,38 @@ public class AdminGoodsService {
     private static final String RV_DIR = "img/goods/";
 
     public GoodsEntity createGoods(final GoodsDTO goodsDTO,
-                                   final CategoryDTO categoryDTO,
+                                   final List<CategoryDTO> categoryDTOs,
                                    final List<MultipartFile> files,
                                    final String userPk
-                                   ) throws Exception{
+                                   ) throws Exception {
         // 토큰 확왼
         userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
 
-        CategoriesEntity category = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
-            .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
+            GoodsEntity newGoods = GoodsEntity.builder()
+                .goodsName(goodsDTO.getGoodsName())
+                .goodsDescription(goodsDTO.getGoodsDescription())
+                .goodsPrice(goodsDTO.getGoodsPrice())
+                .goodsImgCount(files.size())
+                .goodsCreatedAt(goodsDTO.getGoodsCreatedAt())
+                .category(new ArrayList<>())
+                .build();
 
-        GoodsEntity newGoods = GoodsEntity.builder()
-            .goodsName(goodsDTO.getGoodsName())
-            .goodsDescription(goodsDTO.getGoodsDescription())
-            .goodsPrice(goodsDTO.getGoodsPrice())
-            .goodsImgCount(files.size())
-            .goodsCreatedAt(goodsDTO.getGoodsCreatedAt())
-            .category(new ArrayList<>())
-            .build();
+        GoodsEntity saveGoods = goodsRepository.save(newGoods);
+        List<GoodsCategoriesMappingEntity> newCategories = new ArrayList<>();
+        for (CategoryDTO categoryDTO : categoryDTOs) {
+            CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
 
-        GoodsCategoriesMappingEntity mapping = GoodsCategoriesMappingEntity.builder()
-            .goods(newGoods)
-            .category(category)
-            .build();
-        newGoods.getCategory().add(mapping);
-
-        return goodsRepository.save(newGoods);
+            GoodsCategoriesMappingEntity mapping = GoodsCategoriesMappingEntity.builder()
+                .goods(saveGoods)
+                .category(newCategory)
+                .build();
+            goodsCategoriesMappingRepository.save(mapping);
+            newCategories.add(mapping);
+        }
+        saveGoods.getCategory().addAll(newCategories);
+        return goodsRepository.save(saveGoods);
     }
 
     public GoodsEntity updateGoods(final GoodsDTO goodsDTO,
@@ -226,6 +231,8 @@ public class AdminGoodsService {
             .orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
         UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
+        List<GoodsCategoriesMappingEntity> existMappings = goodsCategoriesMappingRepository.findByGoods(goods);
+        goodsCategoriesMappingRepository.deleteAll(existMappings);
 
         if (user != null && goods != null) {
             goodsRepository.delete(goods);
