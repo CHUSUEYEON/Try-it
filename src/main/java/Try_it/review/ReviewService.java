@@ -38,6 +38,8 @@ public class ReviewService {
         GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()
             -> new RuntimeException("해당되는 상품이 없습니다."));
 
+        //Todo : 구매자만 리뷰 작성 가능하도록 하는 예외처리 필요
+
         ReviewEntity newReview = ReviewEntity.builder()
             .goods(goods)
             .user(user)
