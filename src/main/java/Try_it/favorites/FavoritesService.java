@@ -39,4 +39,18 @@ public class FavoritesService {
 
         return favoritesRepository.save(newFavorites);
     }
+
+    public FavoritesEntity delete(final String userPk,
+                                  final Long favPk){
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
+
+        FavoritesEntity favorite = favoritesRepository.findById(favPk).orElseThrow(()
+        -> new RuntimeException("삭제할 찜이 없습니다."));
+
+        if(user!= favorite.getUser()) throw new IllegalStateException("자신이 찜한 상품만 삭제할 수 있습니다.");
+
+        favoritesRepository.delete(favorite);
+        return favorite;
+    }
 }

@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -33,4 +30,16 @@ public class FavoritesController {
            .message("찜 추가 성공")
            .build());
     }
+
+    @DeleteMapping("/{favPk}")
+    public ResponseEntity<ResDTO> removeFavorite(@AuthenticationPrincipal String userPk,
+                               @PathVariable Long favPk) {
+        FavoritesEntity deletedFavorites = favoriteService.delete(userPk, favPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+            .statusCode(StatusCode.OK)
+            .data(deletedFavorites)
+            .message("찜 삭제 성공")
+            .build());
+    }
+
 }
