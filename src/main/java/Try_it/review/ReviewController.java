@@ -90,6 +90,21 @@ public class ReviewController {
             .build());
     }
 
+    @Operation(summary = "리뷰 삭제", description = "path : 리뷰Pk / 해당 토큰 필요")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공"),
+        @ApiResponse(responseCode = "400", description = "리뷰 삭제 실패")
+    })
+    @DeleteMapping("/{reviewPk}")
+    public ResponseEntity<ResDTO> deleteReview(@PathVariable Long reviewPk,
+                                               @AuthenticationPrincipal String userPk){
+        ReviewEntity deletedReview = reviewService.delete(reviewPk, userPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+           .statusCode(StatusCode.OK)
+            .data(deletedReview)
+           .message("리뷰 삭제 성공")
+           .build());
+    }
 
 
 }

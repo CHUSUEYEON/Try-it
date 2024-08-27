@@ -78,6 +78,18 @@ public class ReviewService {
             .build();
 
         return reviewRepository.save(updatedGoods);
+    }
 
+    public ReviewEntity delete(final Long reviewPk, final String userPk){
+        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
+           .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
+
+        ReviewEntity review = reviewRepository.findById(reviewPk).orElseThrow(()
+            -> new RuntimeException("해당되는 리뷰가 없습니다."));
+
+        if(user!= review.getUser()) throw new IllegalStateException("자신이 작성한 리뷰만 삭제할 수 있습니다.");
+
+        reviewRepository.delete(review);
+        return review;
     }
 }
