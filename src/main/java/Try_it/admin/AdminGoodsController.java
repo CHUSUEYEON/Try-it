@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admin/goods")
 @Tag(name = "Goods", description = "상품 관련 API")
 @Slf4j
 public class AdminGoodsController {
@@ -42,7 +42,7 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 등록 성공"),
         @ApiResponse(responseCode = "400", description = "상품 등록 실패")
     })
-    @PostMapping("/goods")
+    @PostMapping("")
     public ResponseEntity<ResDTO> uploadGoods(@Valid @RequestPart GoodsDTO goodsDTO,
                                               @RequestPart List<CategoryDTO> categoryDTOs,
                                               @RequestPart List<MultipartFile> files,
@@ -74,7 +74,7 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 수정 성공"),
         @ApiResponse(responseCode = "400", description = "상품 수정 실패")
     })
-    @PatchMapping("/goods/{goodsPk}")
+    @PatchMapping("/{goodsPk}")
     public ResponseEntity<ResDTO<Object>> updateGoods(@Valid @RequestPart(required = false) GoodsDTO goodsDTO,
                                               @RequestPart(required = false) List<CategoryDTO> categoryDTOs,
                                               @RequestPart(required = false) List<MultipartFile> files,
@@ -95,7 +95,7 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 삭제 성공"),
         @ApiResponse(responseCode = "400", description = "상품 삭제 실패")
     })
-    @DeleteMapping("/goods/{goodsPk}")
+    @DeleteMapping("/{goodsPk}")
     public ResponseEntity<ResDTO> deleteGoods(@PathVariable Long goodsPk, @AuthenticationPrincipal String userPk){
         GoodsEntity deletedGoods = goodsService.delete(goodsPk, userPk);
         return ResponseEntity.ok().body(ResDTO
@@ -111,7 +111,7 @@ public class AdminGoodsController {
         @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
         @ApiResponse(responseCode = "400", description = "상품 조회 실패")
     })
-    @GetMapping("/goods")
+    @GetMapping("")
     public ResponseEntity<ResDTO<Object>> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
                                             @Parameter(name = "page", description = "정렬 기준", in = ParameterIn.QUERY, example = "name")

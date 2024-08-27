@@ -40,14 +40,6 @@ public class AdminGoodsService {
         this.goodsCategoriesMappingRepository = goodsCategoriesMappingRepository;
     }
 
-    @Autowired
-    private AmazonS3 amazonS3Client;
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-    @Value("${cloudfront-domain-name}")
-    private String cloudfront;
-    private static final String RV_DIR = "img/goods/";
-
     public GoodsEntity createGoods(final GoodsDTO goodsDTO,
                                    final List<CategoryDTO> categoryDTOs,
                                    final List<MultipartFile> files,
@@ -138,7 +130,7 @@ public class AdminGoodsService {
     }
 
 
-//Todo : 상품 수정(카테고리 추가한 부분) 트러블 슈팅 작성하기
+//Todo : 상품 등록/수정(카테고리 리스트 추가한 부분) 트러블 슈팅 작성하기
 
 //        if(files != null && !files.isEmpty()){
 //            List<String> fileNames = fileUpload.generateFileName(goodsDTO, files);

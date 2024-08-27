@@ -36,7 +36,7 @@ public class ReviewEntity {
     private Integer reviewRate;
 
     @Column(name = "r_file", nullable = false)
-    private String reviewFile;
+    private Integer reviewFile;
 
     @Column(name = "r_created_at", nullable = false)
     @CreationTimestamp
