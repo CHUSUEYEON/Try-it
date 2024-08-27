@@ -33,7 +33,7 @@ public class ReviewService {
                                      final List<MultipartFile> files
                                     ) throws Exception {
         UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
-            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
+            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()
             -> new RuntimeException("해당되는 상품이 없습니다."));
@@ -47,11 +47,37 @@ public class ReviewService {
             .reviewCreatedAt(reviewDTO.getReviewCreatedAt())
             .build();
 
-        ReviewEntity savedReview = reviewRepository.save(newReview);
-        List<String> fileNames = fileUpload.generateReviewFileName(reviewDTO, goods, files);
-        fileUpload.uploadReviewFile(files, fileNames);
+        return reviewRepository.save(newReview);
+    }
 
-        return savedReview;
+    public ReviewEntity updateReview(final Long reviewPk,
+                                     final String userPk,
+                                     final ReviewDTO reviewDTO,
+                                     final List<MultipartFile> files) throws Exception {
+        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
+            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
+
+        ReviewEntity review = reviewRepository.findById(reviewPk).orElseThrow(()
+            -> new RuntimeException("해당되는 리뷰가 없습니다."));
+
+        if(user != review.getUser()) throw new IllegalStateException("자신이 쓴 리뷰만 수정할 수 있습니다.");
+        if(files != null && !files.isEmpty()){
+            List<String> fileNames = fileUpload.generateReviewFileName(reviewDTO, review.getGoods(), files);
+            fileUpload.uploadReviewFile(files, fileNames);
+        }
+
+        ReviewEntity updatedGoods = ReviewEntity.builder()
+            .reviewFile((files != null && !files.isEmpty()) ? files.size() : review.getReviewFile())
+            .reviewRate(reviewDTO.getReviewRate())
+            .reviewContent(reviewDTO.getReviewContent())
+            .reviewCreatedAt(review.getReviewCreatedAt())
+            .reviewUpdatedAt(reviewDTO.getReviewUpdatedAt())
+            .reviewPk(review.getReviewPk())
+            .goods(review.getGoods())
+            .user(review.getUser())
+            .build();
+
+        return reviewRepository.save(updatedGoods);
 
     }
 }
