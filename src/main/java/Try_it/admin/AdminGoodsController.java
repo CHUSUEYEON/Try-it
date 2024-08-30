@@ -121,9 +121,7 @@ public class AdminGoodsController {
                                             @Parameter(name = "keyword", description = "검색어", in = ParameterIn.QUERY, example = "수영복")
                                             @RequestParam(value = "keyword", required = false) String keyword,
                                            @AuthenticationPrincipal String userPk) {
-//        if (keyword == null || keyword.isEmpty()) {
-//            if(page == null) page = 1;
-        log.warn("keyword {}", keyword);
+
             Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, userPk, keyword);
             return ResponseEntity.ok().body(ResDTO
                 .builder()
@@ -131,15 +129,23 @@ public class AdminGoodsController {
                 .data(goods)
                 .message("상품 조회 성공")
                 .build());
-//        } else {
-//            List<GoodsEntity> goods = goodsService.getGoods(keyword, userPk);
-//            return ResponseEntity.ok().body(ResDTO
-//                .builder()
-//                .statusCode(StatusCode.OK)
-//                .data(goods)
-//                .message("상품 조회 성공")
-//                .build());
-//        }
+    }
+
+
+    @Operation(summary = "상품 조회", description = "관리자 토큰 필요 / path 로 해당 상품 조회")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "상품 조회 실패")
+    })
+    @GetMapping("/{goodsPk}")
+    public  ResponseEntity<ResDTO> getGoods(@AuthenticationPrincipal String userPk, @PathVariable Long goodsPk){
+        GoodsEntity goods = goodsService.getGoods(goodsPk, userPk);
+        return ResponseEntity.ok().body(ResDTO
+           .builder()
+           .statusCode(StatusCode.OK)
+           .data(goods)
+           .message("상품 조회 성공")
+           .build());
     }
     }
 

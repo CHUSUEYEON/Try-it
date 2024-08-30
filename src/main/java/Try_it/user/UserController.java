@@ -58,7 +58,7 @@ public class UserController {
                .build());
     }
 
-    @Operation(summary = "찜 조회", description = "토큰 필요")
+    @Operation(summary = "찜 목록 조회", description = "토큰 필요")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "찜 조회 성공"),
         @ApiResponse(responseCode = "400", description = "찜 조회 실패")

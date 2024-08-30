@@ -129,95 +129,6 @@ public class AdminGoodsService {
         return goodsRepository.save(updatedGoods);
     }
 
-
-//Todo : 상품 등록/수정(카테고리 리스트 추가한 부분) 트러블 슈팅 작성하기
-
-//        if(files != null && !files.isEmpty()){
-//            List<String> fileNames = fileUpload.generateFileName(goodsDTO, files);
-//            fileUpload.uploadFile(files, fileNames);
-//            if(categoryDTOs == null){
-//                GoodsEntity updatedGoodsWithPhoto = GoodsEntity.builder()
-//                    .goodsName(goodsDTO.getGoodsName())
-//                    .goodsPrice(goodsDTO.getGoodsPrice())
-//                    .goodsImgCount(goodsDTO.getGoodsImgCount())
-//                    .goodsPk(goods.getGoodsPk())
-//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
-//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
-//                    .goodsDescription(goodsDTO.getGoodsDescription())
-//                    .category(goods.getCategory())
-//                    .build();
-//                return goodsRepository.save(updatedGoodsWithPhoto);
-//            }else{
-//                for(CategoryDTO categoryDTO : categoryDTOs) {
-//                    CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
-//                        .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
-//
-//
-//                GoodsCategoriesMappingEntity newMapping = GoodsCategoriesMappingEntity.builder()
-//                    .goods(goods)
-//                    .category(newCategory)
-//                    .build();
-//
-//                goodsCategoriesMappingRepository.save(newMapping);
-//
-//                GoodsEntity updatedGoodsWithPhoto = GoodsEntity.builder()
-//                    .goodsName(goodsDTO.getGoodsName())
-//                    .goodsPrice(goodsDTO.getGoodsPrice())
-//                    .goodsImgCount(goodsDTO.getGoodsImgCount())
-//                    .goodsPk(goods.getGoodsPk())
-//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
-//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
-//                    .goodsDescription(goodsDTO.getGoodsDescription())
-//                    .category(new ArrayList<>())
-//                    .build();
-//                updatedGoodsWithPhoto.getCategory().add(newMapping);
-//
-//                return goodsRepository.save(updatedGoodsWithPhoto);
-//            }}
-//        }else{
-//            if(categoryDTOs == null){
-//                GoodsEntity updatedGoods = GoodsEntity.builder()
-//                   .goodsName(goodsDTO.getGoodsName())
-//                   .goodsPrice(goodsDTO.getGoodsPrice())
-//                   .goodsPk(goods.getGoodsPk())
-//                    .goodsImgCount(goods.getGoodsImgCount())
-//                   .goodsCreatedAt(goods.getGoodsCreatedAt())
-//                   .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
-//                   .goodsDescription(goodsDTO.getGoodsDescription())
-//                    .category(goods.getCategory())
-//                   .build();
-//                return goodsRepository.save(updatedGoods);
-//            }else{
-//                for(CategoryDTO categoryDTO : categoryDTOs) {
-//                    CategoriesEntity newCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
-//                        .orElseThrow(() -> new RuntimeException("해당되는 카테고리가 없습니다."));
-//
-//
-//                    GoodsCategoriesMappingEntity newMapping = GoodsCategoriesMappingEntity.builder()
-//                        .goods(goods)
-//                        .category(newCategory)
-//                        .build();
-//
-//                    goodsCategoriesMappingRepository.save(newMapping);
-//
-//                GoodsEntity updatedGoods = GoodsEntity.builder()
-//                    .goodsName(goodsDTO.getGoodsName())
-//                    .goodsPrice(goodsDTO.getGoodsPrice())
-//                    .goodsPk(goods.getGoodsPk())
-//                    .goodsImgCount(goods.getGoodsImgCount())
-//                    .goodsCreatedAt(goods.getGoodsCreatedAt())
-//                    .goodsUpdatedAt(goodsDTO.getGoodsUpdatedAt())
-//                    .goodsDescription(goodsDTO.getGoodsDescription())
-//                    .category(new ArrayList<>())
-//                    .build();
-//
-//                    updatedGoods.getCategory().add(newMapping);
-//                    return goodsRepository.save(updatedGoods);
-//                }
-//            }
-//        }
-//        return null;
-
     public GoodsEntity delete(final Long goodsPk, final String userPk){
         GoodsEntity goods = goodsRepository.findById(goodsPk)
             .orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
@@ -254,28 +165,16 @@ public class AdminGoodsService {
         }
 
     }
-//    public Page<GoodsDTO> getGoodsList(final int page, final String sort, final String direction, final String userPk){
-//        userRepository.findAdminByUserPk(Long.valueOf(userPk))
-//            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
-//
-//        Pageable pageable = PageRequest.of(page -1, Pagination.PAGE_SIZE);
-//
-//        Page<GoodsDTO> goods = goodsRepository.getGoodsList(pageable, sort, direction);
-//        if(goods == null){
-//            throw new IllegalStateException("등록된 상품이 없습니다.");
-//        }
-//        return goods;
-//    }
 
-//    public List<GoodsEntity> getGoods(final String keyword, final String userPk) {
-//        userRepository.findAdminByUserPk(Long.valueOf(userPk))
-//            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
-//
-//        List<GoodsEntity> goods = goodsRepository.findGoodsByKeyword(keyword);
-//        if(goods == null){
-//            throw new IllegalStateException("해당되는 상품이 없습니다.");
-//        }
-//        return goods;
-//    }
+
+    public GoodsEntity getGoods(final Long goodsPk, final String userPk) {
+        userRepository.findAdminByUserPk(Long.valueOf(userPk))
+            .orElseThrow(() -> new RuntimeException("관리자로 로그인을 해주세요."));
+
+        GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()->
+            new IllegalStateException("해당되는 상품이 없습니다."));
+
+        return goods;
+    }
 
 }
