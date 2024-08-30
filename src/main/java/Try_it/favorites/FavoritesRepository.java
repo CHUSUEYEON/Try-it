@@ -16,6 +16,6 @@ public interface FavoritesRepository extends JpaRepository<FavoritesEntity, Long
     FavoritesEntity findByUserAndGoods(@Param("userPk") Long userPk,
                                        @Param("goodsPk") Long goodsPk);
 
-    @Query("SELECT f FROM FavoritesEntity f WHERE f.user.userPk = :userPk")
+    @Query("SELECT f FROM FavoritesEntity f WHERE f.user.userPk = :userPk AND f.goods.goodsDeletedAt IS NULL")
     List<FavoritesEntity> findAllByUserPk(@Param("userPk") Long userPk);
 }

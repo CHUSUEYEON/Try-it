@@ -30,6 +30,10 @@ public class FavoritesService {
         GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()
             -> new RuntimeException("해당되는 상품이 없습니다."));
 
+        if(goods.getGoodsDeletedAt() != null){
+            throw new RuntimeException("삭제된 상품에는 찜 추가를 할 수 없습니다.");
+        }
+
         if (favoritesRepository.findByUserAndGoods(user.getUserPk(), goods.getGoodsPk()) != null){
             throw new RuntimeException("이미 찜 추가한 상품입니다.");
         }
@@ -61,7 +65,8 @@ public class FavoritesService {
             .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         List<FavoritesEntity> favorites = favoritesRepository.findAllByUserPk(user.getUserPk());
-        if(favorites == null) throw new IllegalStateException("추가된 찜이 없습니다.");
+
+        if(favorites == null) throw new IllegalStateException("불러올 찜 목록이 없습니다.");
 
         return favorites;
     }
