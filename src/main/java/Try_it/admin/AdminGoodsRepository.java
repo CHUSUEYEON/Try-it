@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AdminGoodsRepository extends JpaRepository<GoodsEntity, Long>{
 
@@ -24,4 +26,6 @@ public interface AdminGoodsRepository extends JpaRepository<GoodsEntity, Long>{
         OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         """)
     Page<GoodsEntity> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
 }
