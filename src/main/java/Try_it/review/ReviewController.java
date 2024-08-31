@@ -107,5 +107,17 @@ public class ReviewController {
     }
 
 
+//    @DeleteMapping("/img/{reviewPk}")
+//    public ResponseEntity<ResDTO> deleteReviewImg(@PathVariable Long reviewPk,
+//                                                  @AuthenticationPrincipal String userPk){
+//        ReviewEntity deletedReviewImg = reviewService.deleteReviewImg(reviewPk, userPk);
+//        return ResponseEntity.ok().body(ResDTO.builder()
+//           .statusCode(StatusCode.OK)
+//           .data(deletedReviewImg)
+//           .message("리뷰 이미지 삭제 성공")
+//           .build());
+//    }
+
+
 
 }

@@ -152,13 +152,13 @@ public class AdminGoodsService {
 
         if(keyword == null || keyword.isEmpty()){
             Page<GoodsEntity> goods = goodsRepository.findAll(pageable);
-            if(goods == null){
+            if(goods.isEmpty()){
                 throw new IllegalStateException("등록된 상품이 없습니다.");
             }
             return goods;
         } else{
             Page<GoodsEntity> goods = goodsRepository.findAllByKeyword(keyword, pageable);
-            if(goods == null){
+            if(goods.isEmpty()){
                 throw new IllegalStateException("등록된 상품이 없습니다.");
             }
             return goods;

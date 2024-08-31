@@ -32,7 +32,7 @@ public class ReviewService {
                                      final ReviewDTO reviewDTO,
                                      final List<MultipartFile> files
                                     ) throws Exception {
-        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(()
@@ -62,7 +62,7 @@ public class ReviewService {
                                      final String userPk,
                                      final ReviewDTO reviewDTO,
                                      final List<MultipartFile> files) throws Exception {
-        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         ReviewEntity review = reviewRepository.findById(reviewPk).orElseThrow(()
@@ -89,7 +89,7 @@ public class ReviewService {
     }
 
     public ReviewEntity delete(final Long reviewPk, final String userPk){
-        UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
            .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
 
         ReviewEntity review = reviewRepository.findById(reviewPk).orElseThrow(()
@@ -100,4 +100,17 @@ public class ReviewService {
         reviewRepository.delete(review);
         return review;
     }
+
+//    public ReviewEntity deleteReviewImg(final Long reviewPk, final String userPk){
+//        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
+//           .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
+//
+//        ReviewEntity review = reviewRepository.findById(reviewPk).orElseThrow(()
+//            -> new RuntimeException("해당되는 리뷰가 없습니다."));
+//
+//        if(user!= review.getUser()) throw new IllegalStateException("자신이 작성한 리뷰만 삭제할 수 있습니다.");
+//
+//        reviewRepository.save(review);
+//        return review;
+//    }
 }

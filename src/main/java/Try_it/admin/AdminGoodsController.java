@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/goods")
-@Tag(name = "Goods", description = "상품 관련 API")
+@Tag(name = "Admin Goods", description = "관리자가 관리하는 상품 관련 API")
 @Slf4j
 public class AdminGoodsController {
     final private AdminGoodsService goodsService;
@@ -114,7 +114,7 @@ public class AdminGoodsController {
     @GetMapping("")
     public ResponseEntity<ResDTO<Object>> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                            @Parameter(name = "page", description = "정렬 기준", in = ParameterIn.QUERY, example = "name")
+                                            @Parameter(name = "sort", description = "정렬 기준", in = ParameterIn.QUERY, example = "goodsName")
                                             @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
                                             @Parameter(name = "direction", description = "정렬 순서", in = ParameterIn.QUERY, example = "desc")
                                             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
