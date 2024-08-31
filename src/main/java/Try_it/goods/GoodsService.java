@@ -16,7 +16,7 @@ public class GoodsService {
         this.goodsRepository = goodsRepository;
     }
 
-    public Page<GoodsEntity> getGoods(final int page,
+    public Page<GoodsEntity> getGoodsList(final int page,
                                      final String sort,
                                      final String direction,
                                      final String keyword){
@@ -37,6 +37,11 @@ public class GoodsService {
             }
             return goods;
         }
+    }
 
+    public GoodsEntity getGoods(final Long goodsPk){
+        GoodsEntity goods = goodsRepository.findById(goodsPk).orElseThrow(() ->
+            new IllegalStateException("해당되는 상품이 없습니다."));
+        return goods;
     }
 }

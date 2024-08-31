@@ -31,7 +31,7 @@ public class GoodsController {
         @ApiResponse(responseCode = "400", description = "상품 조회 실패")
     })
     @GetMapping("")
-    public ResponseEntity<ResDTO<Object>> getGoods(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
+    public ResponseEntity<ResDTO<Object>> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "1")
                                                @RequestParam(value = "page", defaultValue = "0") Integer page,
                                            @Parameter(name = "sort", description = "정렬 기준", in = ParameterIn.QUERY, example = "goodsName")
                                                @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
@@ -39,10 +39,8 @@ public class GoodsController {
                                                @RequestParam(value = "direction", defaultValue = "ASC") String direction,
                                            @Parameter(name = "keyword", description = "검색어", in = ParameterIn.QUERY, example = "수영복")
                                                @RequestParam(value = "keyword", required = false) String keyword){
-        log.info("getGoods controller");
-        log.warn("****************************");
-        log.warn("keyword {}", keyword);
-        Page<GoodsEntity> goods = goodsService.getGoods(page, sort, direction, keyword);
+
+        Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, keyword);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)
            .message("상품 조회 성공")
@@ -50,4 +48,13 @@ public class GoodsController {
            .build());
     }
 
+    @GetMapping("/{goodsPk}")
+    public ResponseEntity<ResDTO<Object>> getGoods(@PathVariable("goodsPk") Long goodsPk){
+        GoodsEntity goods = goodsService.getGoods(goodsPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+           .statusCode(StatusCode.OK)
+           .message("상품 상세 조회 성공")
+           .data(goods)
+           .build());
+    }
 }
