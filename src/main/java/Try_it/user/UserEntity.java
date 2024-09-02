@@ -1,7 +1,7 @@
 package Try_it.user;
 
 import Try_it.cart.CartEntity;
-import Try_it.coupon.AlarmEntity;
+import Try_it.alarm.AlarmEntity;
 import Try_it.coupon.CouponUserMappingEntity;
 import Try_it.review.ReviewEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;

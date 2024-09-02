@@ -1,4 +1,4 @@
-package Try_it.coupon;
+package Try_it.alarm;
 
 import Try_it.user.UserEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -8,8 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -32,11 +31,11 @@ public class AlarmEntity {
     private String alarmTitle;
 
     @Column(name = "a_is_read", nullable = false)
-    private Boolean alarmIsRead;
+    @ColumnDefault("false")
+    private Boolean alarmIsRead = false;
 
     @ManyToOne
     @JoinColumn(name = "u_pk", nullable = false)
     @JsonBackReference
     private UserEntity user;
-
 }

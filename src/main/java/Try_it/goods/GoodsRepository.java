@@ -13,10 +13,11 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
         SELECT g FROM GoodsEntity g
         LEFT JOIN g.category gc
         LEFT JOIN gc.category c
-        WHERE (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        WHERE c.categoryName = :category AND 
+        (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
         AND g.goodsDeletedAt IS NULL
         """)
-    Page<GoodsEntity> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    Page<GoodsEntity> findAllByKeyword(@Param("category") String category, @Param("keyword") String keyword, Pageable pageable);
     //Todo : goodsDeletedAt 안됨! 해결해야 함.
 }

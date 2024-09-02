@@ -19,6 +19,7 @@ public class GoodsService {
     public Page<GoodsEntity> getGoodsList(final int page,
                                      final String sort,
                                      final String direction,
+                                     final String category,
                                      final String keyword){
 
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
@@ -31,7 +32,7 @@ public class GoodsService {
             }
             return goods;
         } else{
-            Page<GoodsEntity> goods = goodsRepository.findAllByKeyword(keyword, pageable);
+            Page<GoodsEntity> goods = goodsRepository.findAllByKeyword(category, keyword, pageable);
             if(goods.isEmpty()){
                 throw new IllegalStateException("등록된 상품이 없습니다.");
             }

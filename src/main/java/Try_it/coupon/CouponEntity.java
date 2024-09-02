@@ -25,7 +25,6 @@ public class CouponEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cou_pk", updatable = false)
     private Long couponPk;
-    //Todo: pk -> pk
 
     @Column(name = "cou_name", nullable = false, length = 100)
     private String couponName;
