@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Builder
@@ -56,4 +57,9 @@ public class UserDTO {
 
     @Schema(description = "JWT Token", example = "eyJhbGciO.eyJhbGci", nullable = true)
     private String token;
+
+    private List alarms;
+    private List carts;
+    private List coupons;
+    private List reviews;
 }

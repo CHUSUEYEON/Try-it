@@ -24,6 +24,9 @@ public class AlarmEntity {
     @Column(name = "a_pk", updatable = false)
     private Long alarmPk;
 
+    @Column(name = "a_id", nullable = false)
+    private String alarmId;
+
     @Column(name = "a_content", nullable = false)
     private String alarmContent;
 
@@ -33,6 +36,13 @@ public class AlarmEntity {
     @Column(name = "a_is_read", nullable = false)
     @ColumnDefault("false")
     private Boolean alarmIsRead = false;
+
+    @Column(name = "a_receiver", nullable = false)
+    private String alarmReceiver;
+
+    // 알림을 클릭했을 때 사용자가 이동할 페이지나 리소스를 지정
+    @Column(name = "a_url", nullable = false)
+    private String alarmUrl;
 
     @ManyToOne
     @JoinColumn(name = "u_pk", nullable = false)
