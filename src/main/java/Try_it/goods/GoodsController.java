@@ -34,10 +34,13 @@ public class GoodsController {
     public ResponseEntity<ResDTO<Object>> getGoodsList(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                                @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
                                                @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+                                                @RequestParam(value = "bigCategory", required = false) String bigCategory,
+                                                @RequestParam(value = "gender", required = false) String gender,
+                                                @RequestParam(value = "isChild", required = false) boolean isChild,
                                                 @RequestParam(value = "category", required = false) String category,
                                                @RequestParam(value = "keyword", required = false) String keyword){
 
-        Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, category, keyword);
+        Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, bigCategory, gender, isChild, category, keyword);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)
            .message("상품 조회 성공")

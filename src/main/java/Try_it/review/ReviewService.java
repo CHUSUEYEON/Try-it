@@ -1,6 +1,7 @@
 package Try_it.review;
 
 import Try_it.admin.AdminGoodsRepository;
+import Try_it.common.util.FileRemove;
 import Try_it.common.util.FileUpload;
 import Try_it.goods.GoodsDTO;
 import Try_it.goods.GoodsEntity;
@@ -19,12 +20,14 @@ public class ReviewService {
     final private UserRepository userRepository;
     final private AdminGoodsRepository goodsRepository;
     final private FileUpload fileUpload;
+    final private FileRemove fileRemove;
 
-    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, AdminGoodsRepository goodsRepository, FileUpload fileUpload) {
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, AdminGoodsRepository goodsRepository, FileUpload fileUpload, FileRemove fileRemove) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.goodsRepository = goodsRepository;
         this.fileUpload = fileUpload;
+        this.fileRemove = fileRemove;
     }
 
     public ReviewEntity createReview(final Long goodsPk,
@@ -70,7 +73,8 @@ public class ReviewService {
 
         if(user != review.getUser()) throw new IllegalStateException("자신이 쓴 리뷰만 수정할 수 있습니다.");
         if(files != null && !files.isEmpty()){
-            List<String> fileNames = fileUpload.generateReviewFileName(reviewDTO, review.getGoods(), files);
+            fileRemove.removeReviewsFile(reviewPk);
+            List<String> fileNames = fileUpload.generateReviewFileName(reviewPk, review.getGoods(), files);
             fileUpload.uploadReviewFile(files, fileNames);
         }
 
@@ -98,9 +102,10 @@ public class ReviewService {
         if(user!= review.getUser()) throw new IllegalStateException("자신이 작성한 리뷰만 삭제할 수 있습니다.");
 
         reviewRepository.delete(review);
+        fileRemove.removeReviewsFile(reviewPk);
         return review;
     }
-
+//
 //    public ReviewEntity deleteReviewImg(final Long reviewPk, final String userPk){
 //        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
 //           .orElseThrow(() -> new RuntimeException("로그인을 해주세요."));
@@ -110,6 +115,9 @@ public class ReviewService {
 //
 //        if(user!= review.getUser()) throw new IllegalStateException("자신이 작성한 리뷰만 삭제할 수 있습니다.");
 //
+//        review.builder()
+//            .reviewFile(review.getReviewFile() - 1)
+//            .build();
 //        reviewRepository.save(review);
 //        return review;
 //    }

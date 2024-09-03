@@ -1,6 +1,7 @@
 package Try_it.admin;
 
 import Try_it.category.*;
+import Try_it.common.util.FileRemove;
 import Try_it.common.util.FileUpload;
 import Try_it.goods.GoodsDTO;
 import Try_it.goods.GoodsEntity;
@@ -30,14 +31,16 @@ public class AdminGoodsService {
     private final CategoryRepository categoryRepository;
     private final GoodsCategoriesMappingRepository goodsCategoriesMappingRepository;
     private final FileUpload fileUpload;
+    private final FileRemove fileRemove;
 
     @Autowired
-    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload, CategoryRepository categoryRepository, GoodsCategoriesMappingRepository goodsCategoriesMappingRepository) {
+    public AdminGoodsService(AdminGoodsRepository goodsRepository, UserRepository userRepository, FileUpload fileUpload, CategoryRepository categoryRepository, GoodsCategoriesMappingRepository goodsCategoriesMappingRepository,FileRemove fileRemove) {
         this.goodsRepository = goodsRepository;
         this.userRepository = userRepository;
         this.fileUpload = fileUpload;
         this.categoryRepository = categoryRepository;
         this.goodsCategoriesMappingRepository = goodsCategoriesMappingRepository;
+        this.fileRemove = fileRemove;
     }
 
     public GoodsEntity createGoods(final GoodsDTO goodsDTO,
@@ -88,7 +91,8 @@ public class AdminGoodsService {
 
 // 파일 업로드 처리
         if (files != null && !files.isEmpty()) {
-            List<String> fileNames = fileUpload.generateFileName(goodsDTO, files);
+            fileRemove.removeGoodsFile(goodsPk);
+            List<String> fileNames = fileUpload.generateFileName(goodsPk, files);
             fileUpload.uploadFile(files, fileNames);
         }
 
@@ -139,6 +143,7 @@ public class AdminGoodsService {
 
         if (user != null && goods != null) {
             goodsRepository.delete(goods);
+            fileRemove.removeGoodsFile(goodsPk);
             return goods;
         }else throw new RuntimeException("상품 삭제 실패");
     }

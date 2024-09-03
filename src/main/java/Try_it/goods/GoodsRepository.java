@@ -13,11 +13,46 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
         SELECT g FROM GoodsEntity g
         LEFT JOIN g.category gc
         LEFT JOIN gc.category c
-        WHERE c.categoryName = :category AND 
-        (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        """)
+    Page<GoodsEntity> findAllByKeyword(@Param("keyword") String keyword,
+                                       Pageable pageable);
+
+    @Query("""
+        SELECT g FROM GoodsEntity g
+        LEFT JOIN g.category gc
+        LEFT JOIN gc.category c
+        WHERE (:gender IS NULL OR c.categoryName = :gender)
+        AND (:isChild IS NULL OR c.categoryName = :isChild)
+        AND (:category IS NULL OR c.categoryName = :category) 
+        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        """)
+    Page<GoodsEntity> findAllBySwimmerFilter(@Param("gender") String gender,
+                                       @Param("isChild") Boolean isChild,
+                                       @Param("category") String category,
+                                       @Param("keyword") String keyword,
+                                       Pageable pageable);
+    //Todo : goodsDeletedAt 안됨! 해결해야 함.
+
+    @Query("""
+        SELECT g FROM GoodsEntity g
+        LEFT JOIN g.category gc
+        LEFT JOIN gc.category c
+        WHERE c.categoryName = :category 
+        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
         AND g.goodsDeletedAt IS NULL
         """)
-    Page<GoodsEntity> findAllByKeyword(@Param("category") String category, @Param("keyword") String keyword, Pageable pageable);
-    //Todo : goodsDeletedAt 안됨! 해결해야 함.
+    Page<GoodsEntity> findAllBySuppliesFilter(@Param("category") String category,
+                                       @Param("keyword") String keyword,
+                                       Pageable pageable);
+//    수영복을 선택할 경우
+//
+//?bigCategory=수영복&gender=(여성|남성)&isChild=true&category=원피스
+//
+//    용품을 선택할 경우
+//
+//?bigCategory=용품&isChild=true&category=패킹
 }

@@ -19,6 +19,9 @@ public class GoodsService {
     public Page<GoodsEntity> getGoodsList(final int page,
                                      final String sort,
                                      final String direction,
+                                     final String bigCategory,
+                                     final String gender,
+                                     final boolean isChild,
                                      final String category,
                                      final String keyword){
 
@@ -32,7 +35,19 @@ public class GoodsService {
             }
             return goods;
         } else{
-            Page<GoodsEntity> goods = goodsRepository.findAllByKeyword(category, keyword, pageable);
+            Page<GoodsEntity> goods;
+
+            switch (bigCategory){
+                case "수영복" :
+                    goods = goodsRepository.findAllBySwimmerFilter(gender, isChild, category, keyword, pageable);
+                    break;
+                case "용품" :
+                    goods = goodsRepository.findAllBySuppliesFilter(category, keyword, pageable);
+                    break;
+                default:
+                    goods = goodsRepository.findAllByKeyword(keyword, pageable);
+            }
+
             if(goods.isEmpty()){
                 throw new IllegalStateException("등록된 상품이 없습니다.");
             }

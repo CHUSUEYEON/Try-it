@@ -83,23 +83,27 @@ public class AlarmService {
     }
 
     private AlarmEntity createDummyNotification(final String alarmReceiver){
+        UserEntity user = userRepository.findByUserId(alarmReceiver);
         return AlarmEntity.builder()
-            .alarmId(alarmReceiver + "_" + System.currentTimeMillis())
+//            .alarmId(alarmReceiver + "_" + System.currentTimeMillis())
             .alarmContent("send dummy notification")
-            .alarmReceiver(alarmReceiver)
-            .alarmUrl("/dummy-url")
+            .user(user)
+//            .alarmUrl("/dummy-url")
             .alarmTitle("dummy notification")
             .alarmIsRead(false)
             .build();
-        //Todo: alarmUrl method 만들어야 함.
+        //Todo: alarmUrl method 만들어야 함. 시간 남으면 하기!
     }
 
     private AlarmEntity createNotification(final String receiver,
                                            final String title,
                                            final String content,
                                            final String url){
+
+        UserEntity user = userRepository.findByUserId(receiver);
+
         return AlarmEntity.builder()
-            .alarmReceiver(receiver)
+            .user(user)
             .alarmTitle(title)
             .alarmContent(content)
             .alarmIsRead(false)

@@ -1,6 +1,7 @@
 package Try_it.review;
 
 import Try_it.common.dto.ResDTO;
+import Try_it.common.util.FileRemove;
 import Try_it.common.util.FileUpload;
 import Try_it.common.vo.StatusCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +24,12 @@ import java.util.List;
 public class ReviewController {
     final private ReviewService reviewService;
     final private FileUpload fileUpload;
+    final private FileRemove fileRemove;
 
-    public ReviewController(ReviewService reviewService, FileUpload fileUpload) {
+    public ReviewController(ReviewService reviewService, FileUpload fileUpload, FileRemove fileRemove) {
         this.reviewService = reviewService;
         this.fileUpload = fileUpload;
+        this.fileRemove = fileRemove;
     }
     @Operation(summary = "리뷰 등록", description = "requestbody : 리뷰내용, 별점, (사진) / path : 상품Pk/토큰 필요")
     @ApiResponses(value = {
@@ -50,7 +53,7 @@ public class ReviewController {
             .reviewDeletedAt(createdReview.getReviewDeletedAt())
             .build();
 
-        List<String> fileNames = fileUpload.generateReviewFileName(responseReviewDTO, createdReview.getGoods(), files);
+        List<String> fileNames = fileUpload.generateReviewFileName(responseReviewDTO.getReviewPk(), createdReview.getGoods(), files);
         fileUpload.uploadReviewFile(files, fileNames);
 
 
@@ -117,8 +120,8 @@ public class ReviewController {
 //           .message("리뷰 이미지 삭제 성공")
 //           .build());
 //    }
-//
-//
-//
+
+
+
 
 }

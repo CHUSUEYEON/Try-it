@@ -60,7 +60,7 @@ public class AdminGoodsController {
             .goodsPrice(uploadedGoods.getGoodsPrice())
             .categoryName(uploadedGoods.getCategory())
             .build();
-        List<String> fileNames = fileUpload.generateFileName(responseGoodsDTO, files);
+        List<String> fileNames = fileUpload.generateFileName(responseGoodsDTO.getGoodsPk(), files);
         fileUpload.uploadFile(files, fileNames);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)

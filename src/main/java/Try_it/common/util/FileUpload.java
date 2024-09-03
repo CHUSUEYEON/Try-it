@@ -23,7 +23,7 @@ public class FileUpload {
     private static final String RV_DIR = "img/goods/";
     private static final String RV_DIR1 = "img/reviews/";
 
-    public List<String> generateFileName(GoodsDTO goodsDTO, List<MultipartFile> files){
+    public List<String> generateFileName(Long goodsPk, List<MultipartFile> files){
         List<String> fileNames = new ArrayList<String>();
 
         for (int i = 0; i < files.size() ; i ++ ){
@@ -34,7 +34,7 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "%s_%d_%d%s", goodsDTO.getGoodsName(), goodsDTO.getGoodsPk(), i, extension
+                "goods_%d_%d%s", goodsPk, i, extension
                 );
             fileNames.add(formattedFileName);
         }
@@ -54,7 +54,7 @@ public class FileUpload {
         }
     }
 
-    public List<String> generateReviewFileName(ReviewDTO reviewDTO, GoodsEntity goods, List<MultipartFile> files){
+    public List<String> generateReviewFileName(Long reviewPk, GoodsEntity goods, List<MultipartFile> files){
         List<String> fileNames = new ArrayList<String>();
 
         for (int i = 0; i < files.size() ; i ++ ){
@@ -65,7 +65,7 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "%s_%d_%d%s", goods.getGoodsName(), reviewDTO.getReviewPk(), i, extension
+                "reviews_%d_%d%s", reviewPk, i, extension
             );
             fileNames.add(formattedFileName);
         }

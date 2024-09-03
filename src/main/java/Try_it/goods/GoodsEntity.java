@@ -9,13 +9,13 @@ import Try_it.review.ReviewEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -27,6 +27,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SQLDelete(sql = "UPDATE goods SET g_deleted_at = now() WHERE g_pk = ?")
+@SQLRestriction("g_deleted_at is NULL")
 @Table(name = "goods")
 public class GoodsEntity {
     @Id
