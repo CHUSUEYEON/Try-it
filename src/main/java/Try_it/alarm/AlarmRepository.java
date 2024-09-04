@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
-    List<AlarmEntity> findAllByUser(UserEntity user);
+    List<AlarmEntity> findAllByUser_userPk(Long userPk);
 }

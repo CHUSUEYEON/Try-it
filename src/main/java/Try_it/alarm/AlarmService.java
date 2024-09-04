@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -63,11 +64,11 @@ public class AlarmService {
     }
 
 //    알림 전송 메소드
-    public void send(final UserEntity receiver,
+    public void send(final Long receiverPk,
                      final String title,
                      final String content){
-        AlarmEntity alarmEntity = alarmRepository.save(createNotification(receiver, title, content));
-        String userPk = String.valueOf(receiver.getUserPk());
+        AlarmEntity alarmEntity = alarmRepository.save(createNotification(receiverPk, title, content));
+        String userPk = String.valueOf(receiverPk);
         // 로그인한 client의 Emitter 전체 호출(여러 브라우저에서 접속할 수 있기 때문에 emitter가 여러 개일 수 있음)
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmiiterStartWithByUserPk(userPk);
         // 해당 데이터를 EventCache 에 저장
@@ -79,7 +80,7 @@ public class AlarmService {
             }
         );
     }
-// emitter, emitterId 와 함게 알림 내용을 클라이언트에게 전달
+// emitter, emitterId 와 함게 알림 내용을 클라이언트에게 전송
     private void sendToClient(final SseEmitter emitter, final String emitterId, final Object data){
         try{
             emitter.send(SseEmitter.event()
@@ -93,24 +94,11 @@ public class AlarmService {
         }
     }
 
-//    private AlarmEntity createDummyNotification(final String alarmReceiver){
-//        UserEntity user = userRepository.findByUserId(alarmReceiver);
-//        return AlarmEntity.builder()
-////            .alarmId(alarmReceiver + "_" + System.currentTimeMillis())
-//            .alarmContent("send dummy notification")
-//            .user(user)
-////            .alarmUrl("/dummy-url")
-//            .alarmTitle("dummy notification")
-//            .alarmIsRead(false)
-//            .build();
-//        //Todo: alarmUrl method 만들어야 함. 시간 남으면 하기!
-//    }
-
-    private AlarmEntity createNotification(final UserEntity receiver,
+    private AlarmEntity createNotification(final Long receiverPk,
                                            final String title,
                                            final String content){
 
-        UserEntity user = userRepository.findByUserPk(receiver.getUserPk())
+        UserEntity user = userRepository.findByUserPk(receiverPk)
             .orElseThrow(() ->new IllegalStateException("User not found"));
 
         return AlarmEntity.builder()
@@ -121,15 +109,10 @@ public class AlarmService {
             .build();
     }
 
+    public List<AlarmEntity> getAlarmsList(final String userPk){
+        userRepository.findAdminByUserPk(Long.valueOf(userPk))
+            .orElseThrow(()-> new IllegalStateException("관리자로 로그인 해주세요."));
+        return alarmRepository.findAll();
+    }
 
-//    private void emitEventToClient(final SseEmitter sseEmitter, final String emitterId, final AlarmEntity data){
-//        try {
-//            send(sseEmitter, emitterId, data);
-//        } catch (Exception exception) {
-//            throw new RuntimeException("Connection Failed.");
-//        } finally {
-//            sseRepository.deleteEmitterById(emitterId);
-//
-//        }
-//    }
 }

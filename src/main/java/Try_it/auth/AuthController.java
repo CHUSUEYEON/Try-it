@@ -1,5 +1,6 @@
 package Try_it.auth;
 
+import Try_it.alarm.AlarmService;
 import Try_it.common.dto.ResDTO;
 import Try_it.security.TokenProvider;
 import Try_it.common.vo.StatusCode;
@@ -50,13 +51,16 @@ public class AuthController {
     private final AuthService authService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final AlarmService alarmService;
     private DefaultMessageService messageService;
 
+
     @Autowired
-    public AuthController(AuthService authService, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
+    public AuthController(AuthService authService, BCryptPasswordEncoder passwordEncoder, TokenProvider tokenProvider,AlarmService alarmService) {
         this.authService = authService;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.alarmService = alarmService;
     }
 
     @PostConstruct

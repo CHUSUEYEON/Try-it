@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
+
 @Tag(name = "SSE 연결")
 @RestController
 @RequestMapping("/users/notifications")
@@ -35,5 +37,16 @@ public class AlarmController {
                                               @AuthenticationPrincipal String userPk){
         SseEmitter sseEmitter = alarmService.connect(userPk, lastEventId);
         return sseEmitter;
+    }
+
+    @Operation(summary = "알람 목록 조회")
+    @GetMapping()
+    public ResponseEntity<ResDTO> getAlarmsList(@AuthenticationPrincipal String userPk){
+        List<AlarmEntity> alarmsList = alarmService.getAlarmsList(userPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+           .statusCode(StatusCode.OK)
+           .data(alarmsList)
+           .message("알람 목록 조회 성공")
+           .build());
     }
 }

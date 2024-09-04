@@ -50,8 +50,8 @@ public class AlarmEntity {
     private Timestamp alarmCreatedAt;
 
     // 알림을 클릭했을 때 사용자가 이동할 페이지나 리소스를 지정
-    @Column(name = "a_url")
-    private String alarmUrl;
+//    @Column(name = "a_url")
+//    private String alarmUrl;
 
     @ManyToOne
     @JoinColumn(name = "u_pk", nullable = false)
