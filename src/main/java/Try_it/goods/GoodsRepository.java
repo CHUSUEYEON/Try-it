@@ -13,8 +13,7 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
         SELECT g FROM GoodsEntity g
         LEFT JOIN g.category gc
         LEFT JOIN gc.category c
-        WHERE (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         """)
     Page<GoodsEntity> findAllByKeyword(@Param("keyword") String keyword,
                                        Pageable pageable);
@@ -23,27 +22,23 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
         SELECT g FROM GoodsEntity g
         LEFT JOIN g.category gc
         LEFT JOIN gc.category c
-        WHERE (:gender IS NULL OR c.categoryName = :gender)
-        AND (:isChild IS NULL OR c.categoryName = :isChild)
-        AND (:category IS NULL OR c.categoryName = :category) 
-        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE (:gender IS NULL OR :gender = '' OR c.categoryName = :gender)
+        AND (:isChild IS NULL OR :isChild = false OR c.categoryName = '아동')
+        AND (:category IS NULL OR :category = '' OR c.categoryName = :category)
+        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR :keyword = '')
         """)
     Page<GoodsEntity> findAllBySwimmerFilter(@Param("gender") String gender,
                                        @Param("isChild") Boolean isChild,
                                        @Param("category") String category,
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
-    //Todo : goodsDeletedAt 안됨! 해결해야 함.
 
     @Query("""
         SELECT g FROM GoodsEntity g
         LEFT JOIN g.category gc
         LEFT JOIN gc.category c
         WHERE c.categoryName = :category 
-        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND g.goodsDeletedAt IS NULL
+        AND LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         """)
     Page<GoodsEntity> findAllBySuppliesFilter(@Param("category") String category,
                                        @Param("keyword") String keyword,

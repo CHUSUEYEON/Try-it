@@ -24,12 +24,10 @@ import java.util.List;
 public class ReviewController {
     final private ReviewService reviewService;
     final private FileUpload fileUpload;
-    final private FileRemove fileRemove;
 
-    public ReviewController(ReviewService reviewService, FileUpload fileUpload, FileRemove fileRemove) {
+    public ReviewController(ReviewService reviewService, FileUpload fileUpload) {
         this.reviewService = reviewService;
         this.fileUpload = fileUpload;
-        this.fileRemove = fileRemove;
     }
     @Operation(summary = "리뷰 등록", description = "requestbody : 리뷰내용, 별점, (사진) / path : 상품Pk/토큰 필요")
     @ApiResponses(value = {

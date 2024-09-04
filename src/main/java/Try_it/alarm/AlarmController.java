@@ -4,6 +4,7 @@ import Try_it.common.dto.ResDTO;
 import Try_it.common.vo.StatusCode;
 import Try_it.user.UserEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+@Tag(name = "SSE 연결")
 @RestController
 @RequestMapping("/users/notifications")
 public class AlarmController {
@@ -29,13 +31,9 @@ public class AlarmController {
 
     @Operation(summary = "SSE 세션 연결")
     @GetMapping(value = "/connect", produces = "text/event-stream")
-    public ResponseEntity<ResDTO> connect(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") final String lastEventId,
-                                              @AuthenticationPrincipal final String userPk){
+    public SseEmitter connect(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
+                                              @AuthenticationPrincipal String userPk){
         SseEmitter sseEmitter = alarmService.connect(userPk, lastEventId);
-        return ResponseEntity.ok().body(ResDTO.builder()
-                .statusCode(StatusCode.OK)
-                .data(sseEmitter)
-                .message("SSE 연결 성공")
-            .build());
+        return sseEmitter;
     }
 }
