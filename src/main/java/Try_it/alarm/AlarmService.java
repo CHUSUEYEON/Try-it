@@ -29,6 +29,7 @@ public class AlarmService {
     }
 
     public SseEmitter connect(final String userPk, final String lastEventId){
+
         UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(()->new IllegalStateException("User not found"));
         String emitterId = user.getUserPk() + "_" + System.currentTimeMillis();
@@ -66,8 +67,9 @@ public class AlarmService {
 //    알림 전송 메소드
     public void send(final Long receiverPk,
                      final String title,
-                     final String content){
-        AlarmEntity alarmEntity = alarmRepository.save(createNotification(receiverPk, title, content));
+                     final String content,
+                     final String coupon){
+        AlarmEntity alarmEntity = alarmRepository.save(createNotification(receiverPk, title, content, coupon));
         String userPk = String.valueOf(receiverPk);
         // 로그인한 client의 Emitter 전체 호출(여러 브라우저에서 접속할 수 있기 때문에 emitter가 여러 개일 수 있음)
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmiiterStartWithByUserPk(userPk);
@@ -96,23 +98,47 @@ public class AlarmService {
 
     private AlarmEntity createNotification(final Long receiverPk,
                                            final String title,
-                                           final String content){
+                                           final String content,
+                                           final String coupon
+    ){
 
         UserEntity user = userRepository.findByUserPk(receiverPk)
             .orElseThrow(() ->new IllegalStateException("User not found"));
+        String message = content + " \n쿠폰 코드 : " + coupon ;
 
         return AlarmEntity.builder()
             .user(user)
             .alarmTitle(title)
-            .alarmContent(content)
+            .alarmContent(message)
             .alarmIsRead(false)
             .build();
     }
 
     public List<AlarmEntity> getAlarmsList(final String userPk){
-        userRepository.findAdminByUserPk(Long.valueOf(userPk))
-            .orElseThrow(()-> new IllegalStateException("관리자로 로그인 해주세요."));
-        return alarmRepository.findAll();
+        userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(()-> new IllegalStateException("로그인 해주세요."));
+        return alarmRepository.findAllByUser_userPk(Long.valueOf(userPk));
+    }
+
+    public AlarmEntity checkIsRead(final String userPk, final Long alarmPk){
+        userRepository.findByUserPk(Long.valueOf(userPk))
+           .orElseThrow(()-> new IllegalStateException("User not found"));
+        AlarmEntity alarm = alarmRepository.findByAlarmPkAndUser_UserPk(alarmPk, Long.valueOf(userPk))
+           .orElseThrow(() -> new IllegalStateException("알람이 존재하지 않습니다."));
+
+        if(!alarm.getAlarmIsRead()){
+            AlarmEntity updatedAlarm = AlarmEntity.builder()
+                .alarmTitle(alarm.getAlarmTitle())
+                .alarmContent(alarm.getAlarmContent())
+                .alarmCreatedAt(alarm.getAlarmCreatedAt())
+                .alarmPk(alarm.getAlarmPk())
+                .alarmIsRead(true)
+                .user(alarm.getUser())
+                .build();
+            return alarmRepository.save(updatedAlarm);
+        }
+        return null;
+
     }
 
 }

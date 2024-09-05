@@ -47,7 +47,7 @@ public class CouponService {
                                         final String userPk){
         userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(()->new IllegalArgumentException("관리자로 로그인 해주세요."));
-        couponRepository.findById(couponPk).orElseThrow(()
+        CouponEntity coupon = couponRepository.findById(couponPk).orElseThrow(()
             -> new IllegalArgumentException("쿠폰이 존재하지 않습니다."));
 
         List<UserEntity> users = userRepository.findAll();
@@ -55,9 +55,11 @@ public class CouponService {
         log.info("Users: {}", users);
         List<AlarmEntity> result = List.of();
         for(UserEntity user : users){
-            alarmService.send(user.getUserPk(), alarmDTO.getAlarmTitle(), alarmDTO.getAlarmContent());
-            log.info("user: {} ", user.getUserPk());
-            result = alarmService.getAlarmsList(userPk);
+            if(user.getUserIsAdmin() == false) {
+                alarmService.send(user.getUserPk(), alarmDTO.getAlarmTitle(), alarmDTO.getAlarmContent(), coupon.getCouponCode());
+                log.info("user: {} ", user.getUserPk());
+                result = alarmService.getAlarmsList(String.valueOf(user.getUserPk()));
+            }
         }
         return result;
     }

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+  <form id="loginForm">
+    <label for="userId">User ID:</label>
+    <input type="text" id="userId" name="userId" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="loginResult"></p> <!-- 로그인 결과를 보여줄 공간 -->
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // 폼 제출 기본 동작 방지
+
+            // 입력한 유저 ID와 패스워드 값 가져오기
+            const userId = document.getElementById('userId').value;
+            const userPassword = document.getElementById('password').value;
+
+            try {
+                // 로그인 요청 보내기 (POST 요청)
+                const response = await axios.post('/auth/login', { userId, userPassword });
+
+                // 요청 성공 시 처리
+                if (response.status === 200) {
+                    document.getElementById('loginResult').textContent = 'Login successful!';
+                    const token = response.data.data.token;
+                    localStorage.setItem('jwtToken', token); // JWT 토큰 저장
+
+                    // SSE 연결 시작
+                    connectToNotifications();
+
+                    // 페이지 리디렉션 예시
+                    window.location.href = '/pages/main'; // 필요 시 대시보드로 리디렉션
+                }
+            } catch (error) {
+                if (error.response) {
+                    // 서버가 400이나 500에러를 반환한 경우
+                    document.getElementById('loginResult').textContent = 'Login failed: ' + error.response.data.message;
+                } else if (error.request) {
+                    // 요청이 서버에 도달하지 못한 경우
+                    document.getElementById('loginResult').textContent = 'No response from server. Please try again later.';
+                } else {
+                    // 그 외 다른 에러가 발생한 경우
+                    document.getElementById('loginResult').textContent = 'An error occurred: ' + error.message;
+                }
+            }
+        });
+
+        // SSE 연결 함수
+        function connectToNotifications() {
+            const token = localStorage.getItem('jwtToken');
+            const eventSource = new EventSource(`/users/notifications/connect?token=${token}`);
+
+            // 서버로부터 메시지를 받을 때 실행
+            eventSource.onmessage = function(event) {
+                console.log('New notification:', event.data);
+                alert('New notification: ' + event.data); // 알림 메시지 출력 (예시)
+            };
+
+            // 커스텀 이벤트를 사용하는 경우
+            eventSource.addEventListener('sse', function(event) {
+                console.log(event);
+                console.log('New alarm notification:', event.data);
+                 // event.data가 문자열인지 확인 후 startsWith 사용
+                if (typeof event.data === 'string' && !event.data.startsWith('EventStream')) {
+                    // event.data가 객체인 경우 JSON으로 파싱하여 alarmTitle 접근
+                    let data;
+                    try {
+                        data = JSON.parse(event.data);
+                      } catch (e) {
+                        console.error('Failed to parse event data:', e);
+                        return;
+                      }
+
+                    // 알림 제목을 alert로 띄우기
+                    if (data.alarmTitle) {
+                        alert(`[${data.alarmTitle}]이 도착했어요~~~😘 \n쿠폰함을 확인해주세요!`);
+                    } else {
+                        console.error('alarmTitle not found in event data');
+                    }
+                }
+            });
+
+            // 연결이 닫혔을 때
+            eventSource.onerror = function(error) {
+                console.error('SSE connection error:', error);
+                eventSource.close(); // 에러 시 SSE 연결 닫기
+            };
+        }
+
+        // 페이지가 로드될 때 로그인 상태 확인 및 SSE 연결 설정
+        function checkLoginStatus() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                // 로그인 상태이면 SSE 연결 설정
+                connectToNotifications();
+            }
+        }
+
+        // 페이지 로드 시 로그인 상태 확인
+        checkLoginStatus();
+    });
+  </script>
+</body>
+</html>

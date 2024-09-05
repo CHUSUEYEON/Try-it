@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Coupon Notifications</title>
+  <style>
+    h1{
+      text-align: center;
+    }
+
+    #notificationsList {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .notification {
+      width: 50%;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .notification .alarm{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .date{
+      margin-right: 10px;
+    }
+
+    /* 모달 스타일 */
+    .modal {
+      display: none; /* 기본적으로 숨김 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* 다른 요소 위에 표시 */
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto; /* 50% 위치 */
+      padding: 20px;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2{
+      text-align: center;
+    }
+
+    .content {
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      text-align: center;
+     }
+
+
+     .dateP {
+      margin-bottom: 10px;
+      font-size: 12px;
+      }
+
+    .modal-header, .modal-body, .modal-footer {
+      margin-bottom: 15px;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      float: right;
+      font-size: 20px;
+    }
+
+    .modal-close:hover {
+      color: red;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Coupon Notifications</h1>
+  <div id="notificationsList">
+    <!-- 알람 목록이 여기에 표시됨 -->
+  </div>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <div class="content">
+        <p id="modalContent"></p>
+        <p class="dateP"><strong>Received Date:</strong> <span id="modalDate"></span></p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // 모달 요소 참조
+    const modal = document.getElementById('myModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+    const modalDate = document.getElementById('modalDate');
+    const closeModalBtn = document.getElementsByClassName('modal-close')[0];
+
+    // 로그인 상태 확인 및 SSE 연결 설정
+    function checkLoginStatus() {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            connectToNotifications();
+            getAlarmsList(token);
+        }
+    }
+
+    // 알람 목록 가져오는 함수
+      async function getAlarmsList(token) {
+        try {
+          const response = await axios.get('/users/notifications', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.status === 200 && response.data.data) {
+            const alarms = response.data.data;
+            displayAlarms(alarms);
+          }
+        } catch (error) {
+          console.error('Failed to fetch alarms:', error);
+        }
+      }
+
+      // 알람 목록을 화면에 표시하는 함수
+      function displayAlarms(alarms) {
+        const notificationsList = document.getElementById('notificationsList');
+        notificationsList.innerHTML = ''; // 기존 내용 초기화
+
+        alarms.forEach(alarm => {
+          const alarmDiv = document.createElement('div');
+          const formattedDate = alarm.alarmCreatedAt.substring(0, 10)
+          alarmDiv.classList.add('notification');
+          alarmDiv.innerHTML = `
+            <div class = "alarm">
+            <span><strong>Title:</strong> ${alarm.alarmTitle} </span>
+            <span><span class="date">${formattedDate}</span>
+            ${alarm.alarmIsRead === true ? '읽음' : '<span style="color:red; text-align: right;">1</span>'}
+            </span>
+            </div>
+          `;
+            // 클릭하면 모달이 열리도록 설정
+            alarmDiv.addEventListener('click', () => {
+           console.log('Alarm clicked:', alarm.alarmTitle);  // 로그로 클릭 확인
+            openModal(alarm);
+            });
+
+          notificationsList.appendChild(alarmDiv);
+        });
+      }
+
+      // 모달 열기 함수
+      function openModal(alarm) {
+      console.log('Opening modal for:', alarm.alarmTitle);
+      // \n을 <br>로 변환
+        const formattedContent = alarm.alarmContent.replace(/\n/g, '<br>');
+
+        modalTitle.textContent = alarm.alarmTitle;
+        modalContent.innerHTML = `${formattedContent}`;
+        modalDate.textContent = alarm.alarmCreatedAt.substring(0, 10);
+        modal.style.display = "block";
+      }
+
+      // 모달 닫기 함수
+      closeModalBtn.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // 모달 바깥 클릭 시 닫기
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      }
+
+
+    // SSE 연결 함수
+    function connectToNotifications() {
+        const token = localStorage.getItem('jwtToken');
+        const eventSource = new EventSource(`/users/notifications/connect?token=${token}`);
+
+        eventSource.addEventListener('sse', function(event) {
+            if (typeof event.data === 'string' && !event.data.startsWith('EventStream')) {
+                let data;
+                try {
+                    data = JSON.parse(event.data);
+                } catch (e) {
+                    console.error('Failed to parse event data:', e);
+                    return;
+                }
+
+                if (data.alarmTitle) {
+                    alert(`[${data.alarmTitle}]이 도착했어요~~~😘 \n쿠폰함을 확인해주세요!`);
+                } else {
+                    console.error('alarmTitle not found in event data');
+                }
+            }
+        });
+
+        eventSource.onerror = function(error) {
+            console.error('SSE connection error:', error);
+            eventSource.close(); // 에러 시 SSE 연결 닫기
+        };
+    }
+
+    // 페이지 로드 시 로그인 상태 확인
+    checkLoginStatus();
+});
+
+  </script>
+
+</body>
+</html>

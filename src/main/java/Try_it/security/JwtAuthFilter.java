@@ -29,6 +29,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = parseBearerToken(request);
             log.warn("filter token check {}", token);
 
+            if(token == null){
+                token = request.getParameter("token");
+            }
+
             if(token != null && !token.equalsIgnoreCase("null")){
                 //null Null NULL 대소문자 무시하고 비교
                 String userPk =tokenProvider.validateAndGetUserPk(token);
