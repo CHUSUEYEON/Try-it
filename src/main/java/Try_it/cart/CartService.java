@@ -25,7 +25,8 @@ public class CartService {
     }
 
     public CartEntity createCart(final String userPk,
-                                 final Long goodsPk){
+                                 final Long goodsPk,
+                                 final CartDTO cartDTO){
 
         UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
@@ -33,14 +34,14 @@ public class CartService {
         GoodsEntity goods = goodsRepository.findById(goodsPk)
             .orElseThrow(()-> new IllegalArgumentException("해당되는 상품이 없습니다."));
 
-        List<CartEntity> cart = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
+//        List<CartEntity> cart = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
 
         if(goods.getGoodsDeletedAt()!= null){
             throw new IllegalArgumentException("삭제된 상품은 장바구니에 담을 수 없습니다.");
         }
 
         CartEntity newCart = CartEntity.builder()
-            .cartAmount(cart == null ? 1 : cart.size() + 1 )
+            .cartAmount(cartDTO.getCartAmount())
             .cartIsPaid(false)
             .goods(goods)
             .user(user)
@@ -75,7 +76,7 @@ public class CartService {
 
         }
         public void deleteCart(final String userPk){
-            UserEntity user = userRepository.findById(Long.valueOf(userPk))
+            userRepository.findById(Long.valueOf(userPk))
                 .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요"));
 
             List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
@@ -85,6 +86,26 @@ public class CartService {
             } else {
                 cartRepository.deleteAll(carts);
             }
+    }
+
+    public CartEntity updateCart(final String userPk,
+                                 final CartDTO cartDTO,
+                                 final Long cartPk){
+        userRepository.findByUserPk(Long.valueOf(userPk))
+           .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
+
+        CartEntity cart = cartRepository.findById(cartPk)
+            .orElseThrow(()-> new IllegalArgumentException("저장된 정보가 없습니다."));
+
+        CartEntity updatedCart = CartEntity.builder()
+            .cartPk(cartPk)
+            .cartIsPaid(cart.getCartIsPaid())
+            .cartAmount(cartDTO.getCartAmount())
+            .goods(cart.getGoods())
+            .user(cart.getUser())
+            .build();
+
+        return cartRepository.save(updatedCart);
     }
 
 }

@@ -1,6 +1,7 @@
 package Try_it.cart;
 
 import Try_it.common.dto.ResDTO;
+import Try_it.common.vo.StatusCode;
 import Try_it.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +27,9 @@ public class CartController {
     @Operation(summary = "장바구니에 상품 추가")
     @PostMapping("/goods/{goodsPk}")
     public ResponseEntity<ResDTO> addCart(@AuthenticationPrincipal String userPk,
-                                          @PathVariable Long goodsPk){
-        CartEntity addCart = cartService.createCart(userPk, goodsPk);
+                                          @PathVariable Long goodsPk,
+                                          @RequestBody CartDTO cartDTO){
+        CartEntity addCart = cartService.createCart(userPk, goodsPk, cartDTO);
         CartDTO responseCart = CartDTO.builder()
             .cartPk(addCart.getCartPk())
             .cartAmount(addCart.getCartAmount())
@@ -37,7 +39,7 @@ public class CartController {
             .build();
 
         return ResponseEntity.ok().body(ResDTO.builder()
-           .statusCode(200)
+           .statusCode(StatusCode.OK)
            .data(responseCart)
            .message("장바구니에 상품 추가 성공")
            .build());
@@ -61,9 +63,21 @@ public class CartController {
         cartService.deleteCart(userPk);
 
         return ResponseEntity.ok().body(ResDTO.builder()
-            .statusCode(200)
+            .statusCode(StatusCode.OK)
             .message("전체 장바구니 삭제 성공")
             .build());
     }
 
-}
+    @Operation(summary = "장바구니에 있는 상품 수량 변경")
+    @PatchMapping("/{cartPk}")
+    public ResponseEntity<ResDTO> updateCart(@AuthenticationPrincipal String userPk,
+                                             @RequestBody CartDTO cartDTO,
+                                             @PathVariable Long cartPk){
+        CartEntity updatedCart = cartService.updateCart(userPk, cartDTO, cartPk);
+            return ResponseEntity.ok().body(ResDTO.builder()
+                    .data(updatedCart)
+                    .message("수량 변경 성공")
+                    .statusCode(StatusCode.OK)
+                .build());
+        }
+    }
