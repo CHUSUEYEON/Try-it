@@ -22,9 +22,9 @@ public class CartDTO {
     private Boolean cartIsPaid;
 
     @Schema(description = "해당 상품")
-    private GoodsEntity goods;
+    private Long goods;
 
     @Schema(description = "해당 유저")
-    private UserEntity user;
+    private Long user;
 
 }
