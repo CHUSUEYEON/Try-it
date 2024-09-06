@@ -60,18 +60,31 @@ public class CartService {
         List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
         log.info("carts : {}", carts);
 
-        for(CartEntity cart : carts){
-            log.info("** cart : {}", cart.getGoods().getGoodsPk());
-        if(cart == null){
+        if(carts == null){
             throw new RuntimeException("장바구니에 저장된 상품이 없습니다.");
         }
+
+        for(CartEntity cart : carts){
+            log.info("** cart : {}", cart.getGoods().getGoodsPk());
 
         if(cart.getGoods().getGoodsPk() == goodsPk){
             cartRepository.delete(cart);
         }
         }
+
+
+        }
+        public void deleteCart(final String userPk){
+            UserEntity user = userRepository.findById(Long.valueOf(userPk))
+                .orElseThrow(()-> new RuntimeException("로그인을 해주세요"));
+
+            List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
+
+            if(carts == null){
+                throw new RuntimeException("장바구니에 저장된 상품이 없습니다.");
+            } else {
+                cartRepository.deleteAll(carts);
+            }
     }
-
-
 
 }

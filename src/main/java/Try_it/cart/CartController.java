@@ -55,4 +55,15 @@ public class CartController {
             .build());
     }
 
+    @Operation(summary = "장바구니에 있는 상품 삭제")
+    @DeleteMapping("")
+    public ResponseEntity<ResDTO> deleteCart(@AuthenticationPrincipal String userPk) {
+        cartService.deleteCart(userPk);
+
+        return ResponseEntity.ok().body(ResDTO.builder()
+            .statusCode(200)
+            .message("전체 장바구니 삭제 성공")
+            .build());
+    }
+
 }
