@@ -6,12 +6,15 @@ import Try_it.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.POST;
 
 import java.util.List;
+
+import static java.time.LocalTime.now;
 
 @RestController
 @RequestMapping("/users/carts")
@@ -36,6 +39,7 @@ public class CartController {
             .cartIsPaid(addCart.getCartIsPaid())
             .goods(addCart.getGoods().getGoodsPk())
             .user(addCart.getUser().getUserPk())
+            .cartCreatedAt(addCart.getCartCreatedAt())
             .build();
 
         return ResponseEntity.ok().body(ResDTO.builder()
@@ -80,4 +84,21 @@ public class CartController {
                     .statusCode(StatusCode.OK)
                 .build());
         }
+
+
+    @Operation(summary = "장바구니 조회")
+    @GetMapping
+    public ResponseEntity<ResDTO<Object>> getCarts(@AuthenticationPrincipal String userPk,
+                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                           @RequestParam(value = "sort", defaultValue = "cartCreatedAt") String sort,
+                                           @RequestParam(value = "direction", defaultValue = "ASC") String direction
+                                           ){
+        Page<CartEntity> carts = cartService.getCarts(page, sort, direction, userPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+           .statusCode(StatusCode.OK)
+           .data(carts)
+           .message("장바구니 목록 조회 성공")
+           .build());
     }
+
+}

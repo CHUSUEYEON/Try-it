@@ -6,6 +6,10 @@ import Try_it.user.UserEntity;
 import Try_it.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -101,11 +105,31 @@ public class CartService {
             .cartPk(cartPk)
             .cartIsPaid(cart.getCartIsPaid())
             .cartAmount(cartDTO.getCartAmount())
+            .cartCreatedAt(cart.getCartCreatedAt())
             .goods(cart.getGoods())
             .user(cart.getUser())
             .build();
 
         return cartRepository.save(updatedCart);
+    }
+
+    public Page<CartEntity> getCarts(final int page,
+                                     final String sort,
+                                     final String direction,
+                                     final String userPk){
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sortDirection, sort));
+
+        userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(()-> new IllegalStateException("로그인을 해주세요."));
+
+        Page<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk), pageable);
+
+        if(carts == null){
+            throw new IllegalStateException("장바구니에 저장된 상품이 없습니다.");
+        }
+
+        return carts;
     }
 
 }

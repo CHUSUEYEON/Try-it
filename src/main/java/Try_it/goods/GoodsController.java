@@ -35,7 +35,7 @@ public class GoodsController {
                                                @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
                                                @RequestParam(value = "direction", defaultValue = "ASC") String direction,
                                                 @RequestParam(value = "bigCategory", required = false) String bigCategory,
-                                                @RequestParam(value = "gender", required = false) String gender,
+                                               @RequestParam(value = "gender", required = false) String gender,
                                                 @RequestParam(value = "isChild", required = false) boolean isChild,
                                                 @RequestParam(value = "category", required = false) String category,
                                                @RequestParam(value = "keyword", required = false) String keyword){

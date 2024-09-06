@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.sql.Timestamp;
+
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,6 +22,9 @@ public class CartDTO {
 
     @Schema(description = "결제 여부", example = "true")
     private Boolean cartIsPaid;
+
+    @Schema(description = "상품 추가 날짜", example = "2024-02-24")
+    private Timestamp cartCreatedAt;
 
     @Schema(description = "해당 상품")
     private Long goods;

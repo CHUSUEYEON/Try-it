@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -28,6 +31,10 @@ public class CartEntity {
 
     @Column(name = "c_is_paid", nullable = false)
     private Boolean cartIsPaid;
+
+    @Column(name = "c_careatd_at", nullable = false)
+    @CreationTimestamp
+    private Timestamp cartCreatedAt;
 
     @ManyToOne
     @JoinColumn(name = "g_pk", nullable = false)
