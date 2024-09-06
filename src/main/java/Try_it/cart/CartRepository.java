@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
     List<CartEntity> findAllByUser_userPk(Long userPk);
     Page<CartEntity> findAllByUser_userPk(Long userPk, Pageable pageable);
+    CartEntity findByUser_UserPkAndGoods_GoodsPk(Long userPk, Long goodsPk);
 }

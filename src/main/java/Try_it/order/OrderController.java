@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("/users/orders")
@@ -24,7 +26,7 @@ public class OrderController {
     }
 
     @Operation(summary = "주문 추가 API")
-    @PostMapping("goods/{goodPk}")
+    @PostMapping("/goods/{goodPk}")
     public ResponseEntity<ResDTO> createOrder(@AuthenticationPrincipal String userPk,
                                               @RequestParam(required = false) Long couponPk,
                                               @RequestBody OrderDTO orderDTO,
@@ -47,6 +49,20 @@ public class OrderController {
            .data(responseOrder)
            .message("주문리스트에 주문 추가 성공")
            .build());
+    }
+
+    @Operation(summary = "장바구니에 담긴 전체 상품 주문 API")
+    @PostMapping("/goods")
+    public ResponseEntity<ResDTO> createCartsOrder(@AuthenticationPrincipal String userPk,
+                                                   @RequestParam(required = false) Long couponPk,
+                                                @RequestBody OrderDTO orderDTO
+                                                ){
+        List<OrderEntity> newOrders =orderService.createCartsOrder(userPk, orderDTO, couponPk);
+        return ResponseEntity.ok().body(ResDTO.builder()
+            .statusCode(StatusCode.OK)
+            .data(newOrders)
+            .message("주문리스트에 주문 추가 성공")
+            .build());
     }
 
 }
