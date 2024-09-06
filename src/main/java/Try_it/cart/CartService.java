@@ -28,15 +28,15 @@ public class CartService {
                                  final Long goodsPk){
 
         UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
-            .orElseThrow(()-> new RuntimeException("로그인을 해주세요."));
+            .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
 
         GoodsEntity goods = goodsRepository.findById(goodsPk)
-            .orElseThrow(()-> new RuntimeException("해당되는 상품이 없습니다."));
+            .orElseThrow(()-> new IllegalArgumentException("해당되는 상품이 없습니다."));
 
         List<CartEntity> cart = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
 
         if(goods.getGoodsDeletedAt()!= null){
-            throw new RuntimeException("삭제된 상품은 장바구니에 담을 수 없습니다.");
+            throw new IllegalArgumentException("삭제된 상품은 장바구니에 담을 수 없습니다.");
         }
 
         CartEntity newCart = CartEntity.builder()
@@ -52,16 +52,16 @@ public class CartService {
     public void deleteGoodsInCart(final String userPk,
                                   final Long goodsPk){
         userRepository.findByUserPk(Long.valueOf(userPk))
-            .orElseThrow(()-> new RuntimeException("로그인을 해주세요."));
+            .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
 
         goodsRepository.findById(goodsPk)
-            .orElseThrow(()->new RuntimeException("해당되는 상품이 없습니다."));
+            .orElseThrow(()->new IllegalArgumentException("해당되는 상품이 없습니다."));
 
         List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
         log.info("carts : {}", carts);
 
         if(carts == null){
-            throw new RuntimeException("장바구니에 저장된 상품이 없습니다.");
+            throw new IllegalArgumentException("장바구니에 저장된 상품이 없습니다.");
         }
 
         for(CartEntity cart : carts){
@@ -76,12 +76,12 @@ public class CartService {
         }
         public void deleteCart(final String userPk){
             UserEntity user = userRepository.findById(Long.valueOf(userPk))
-                .orElseThrow(()-> new RuntimeException("로그인을 해주세요"));
+                .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요"));
 
             List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));
 
             if(carts == null){
-                throw new RuntimeException("장바구니에 저장된 상품이 없습니다.");
+                throw new IllegalArgumentException("장바구니에 저장된 상품이 없습니다.");
             } else {
                 cartRepository.deleteAll(carts);
             }

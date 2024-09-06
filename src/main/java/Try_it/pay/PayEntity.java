@@ -1,6 +1,7 @@
-package Try_it.order;
+package Try_it.pay;
 
 import Try_it.goods.GoodsEntity;
+import Try_it.order.OrderEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

@@ -57,7 +57,7 @@ public class OrderEntity {
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "c_pk", nullable = false)
+    @JoinColumn(name = "cou_pk")
     @JsonBackReference
     private CouponEntity coupon;
 
