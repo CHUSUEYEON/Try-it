@@ -1,5 +1,6 @@
 package Try_it.goods;
 
+import Try_it.order.OrderListEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,4 +51,6 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
 //    용품을 선택할 경우
 //
 //?bigCategory=용품&isChild=true&category=패킹
+
+    GoodsEntity findByOrderList(OrderListEntity orderList);
 }

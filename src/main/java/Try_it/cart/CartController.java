@@ -17,7 +17,7 @@ import java.util.List;
 import static java.time.LocalTime.now;
 
 @RestController
-@RequestMapping("/users/carts")
+@RequestMapping("/carts")
 @Tag(name = "Cart", description = "장바구니 관련 API")
 @Slf4j
 public class CartController {

@@ -141,6 +141,23 @@ public class OrderService {
         }
 
         return orders;
+    }
 
+    public List<OrderEntity> getOrderList(final String userPk) {
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
+           .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
+
+        return orderRepository.findAllByUser(user);
+    }
+
+    public GoodsEntity getOrderGoods(final String userPk, final Long orderPk){
+        userRepository.findByUserPk(Long.valueOf(userPk))
+           .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
+
+        OrderListEntity orderList = orderListRepository.findByOrder_orderPk(orderPk);
+
+        GoodsEntity goods = goodsRepository.findByOrderList(orderList);
+
+        return goods;
     }
 }
