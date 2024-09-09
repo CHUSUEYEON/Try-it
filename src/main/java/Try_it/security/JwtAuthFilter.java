@@ -31,6 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if(token == null){
                 token = request.getParameter("token");
+                log.info("filter token check222 {}", token);
             }
 
             if(token != null && !token.equalsIgnoreCase("null")){

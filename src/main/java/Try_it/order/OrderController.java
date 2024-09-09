@@ -10,13 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 @Slf4j
 @RequestMapping("/orders")
 @Tag(name = "order", description = "주문 관련 API")
@@ -30,6 +32,7 @@ public class OrderController {
 
     @Operation(summary = "주문 추가 API")
     @PostMapping("/goods/{goodPk}")
+    @ResponseBody
     public ResponseEntity<ResDTO> createOrder(@AuthenticationPrincipal String userPk,
                                               @RequestParam(required = false) Long couponPk,
                                               @RequestBody OrderDTO orderDTO,
@@ -56,6 +59,7 @@ public class OrderController {
 
     @Operation(summary = "장바구니에 담긴 전체 상품 주문 API")
     @PostMapping("/goods")
+    @ResponseBody
     public ResponseEntity<ResDTO> createCartsOrder(@AuthenticationPrincipal String userPk,
                                                    @RequestParam(required = false) Long couponPk,
                                                 @RequestBody OrderDTO orderDTO
@@ -70,9 +74,18 @@ public class OrderController {
 
     @Operation(summary = "주문 목록 조회")
     @GetMapping
-    public ResponseEntity<ResDTO> getOrderList(@AuthenticationPrincipal String userPk
-                                               ){
-        List<OrderEntity> orderList = orderService.getOrderList(userPk);
+    public ResponseEntity<ResDTO> getOrderList(@AuthenticationPrincipal String userPk,
+                               Model model){
+        OrderEntity orderList = orderService.getOrderList(userPk);
+        log.warn(orderList.toString());
+        model.addAttribute("orderRecipient", orderList.getOrderRecipient());
+        model.addAttribute("orderAddress", orderList.getOrderAddress());
+        model.addAttribute("orderPhone", orderList.getOrderPhone());
+        model.addAttribute("orderRequest", orderList.getOrderRequest());
+        model.addAttribute("orderList", orderList.getOrderList());
+        model.addAttribute("orderTotal", orderList.getOrderTotal());
+
+//        return "order";}
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)
            .data(orderList)
@@ -82,6 +95,7 @@ public class OrderController {
 
     @Operation(summary = "주문 상세 조회")
     @GetMapping("/{orderPk}")
+    @ResponseBody
     public ResponseEntity<ResDTO> getOrderGoods(@AuthenticationPrincipal String userPk,
                                                 @PathVariable Long orderPk){
         GoodsEntity goods = orderService.getOrderGoods(userPk, orderPk);

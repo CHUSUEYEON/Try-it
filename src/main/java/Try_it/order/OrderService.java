@@ -143,7 +143,7 @@ public class OrderService {
         return orders;
     }
 
-    public List<OrderEntity> getOrderList(final String userPk) {
+    public OrderEntity getOrderList(final String userPk) {
         UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
            .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
 

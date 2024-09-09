@@ -123,6 +123,7 @@ public class AuthController {
         UserEntity user = authService.getUserByCredentials(userDTO.getUserId(), userDTO.getUserPassword());
         if(user != null){
             String token = tokenProvider.create(user);
+            log.info("*****controller token: {}", token);
             final UserDTO responseUserDTO = UserDTO.builder()
                 .userId(user.getUserId())
                 .userPk(user.getUserPk())

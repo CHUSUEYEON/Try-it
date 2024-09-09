@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>main</title>
@@ -21,19 +21,39 @@
 <body>
   <header>
     <div>
+      <a href="orders">주문 </a>
       <a href="coupon">쿠폰함</a>
     </div>
   </header>
   <h1> Welcome to Try-it </h1>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+<!--        const token = localStorage.getItem('jwtToken');-->
+<!--        if(!token){-->
+<!--         console.error("토큰이 없습니다.");-->
+<!--         return;-->
+<!--         }-->
+
+<!--         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;-->
+<!--         console.log(token);-->
+<!--         rendering();-->
+
+<!--         async function rendering(){-->
+<!--          try{-->
+<!--            const res = await axios.get('/pages/main');-->
+<!--            console.log(res.data);-->
+<!--          }catch(error => {-->
+<!--             console.error("메인 페이지 요청 실패 ", error);-->
+<!--         });-->
     // 로그인 상태 확인 및 SSE 연결 설정
     function checkLoginStatus() {
         const token = localStorage.getItem('jwtToken');
-        if (token) {
-            connectToNotifications();
-        }
+
+         if (token) {
+        connectToNotifications();
+      }
     }
 
     // SSE 연결 함수

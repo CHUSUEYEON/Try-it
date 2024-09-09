@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>pay</title>
+  <style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 70%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1, h2 {
+    color: #333;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* 주문 섹션 스타일 */
+.order-section {
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #5b9bd5;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+thead {
+    background-color: #f2f2f2;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 600;
+}
+
+td {
+    color: #555;
+}
+
+tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* 결제 버튼 */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* 결제 금액 강조 */
+p {
+    font-size: 18px;
+    color: #333;
+}
+
+p span {
+    font-weight: bold;
+    color: #e74c3c;
+}
+  </style>
+</head>
+<body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
+  <div class="container">
+    <h1>주문 정보</h1>
+
+    <!-- 사용자 정보 -->
+    <div class="order-section">
+      <h2>배송 정보</h2>
+      <form th:action="@{/orders}" method="get" id="paymentForm">
+<!--      <form th:action="@{/orders/checkout}" method="post" id="paymentForm">-->
+<!--        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />-->
+
+        <label for="recipient">수령인:</label>
+        <input type="text" id="recipient" name="orderRecipient" th:value="${orderRecipient}" required><br>
+
+        <label for="address">주소:</label>
+        <input type="text" id="address" name="orderAddress" th:value="${orderAddress}" required><br>
+
+        <label for="phone">전화번호:</label>
+        <input type="tel" id="phone" name="orderPhone" th:value="${orderPhone}" required><br>
+
+        <label for="request">배송 요청사항:</label>
+        <textarea id="request" name="orderRequest" rows="3" cols="40" th:text="${orderRequest}"></textarea>
+      </form>
+    </div>
+
+    <!-- 주문 상품 정보 -->
+    <div class="order-section">
+      <h2>주문 상품</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>상품명</th>
+          <th>수량</th>
+          <th>가격</th>
+        </tr>
+        </thead>
+        <tbody>
+<!--        <tr th:each="item : ${orderList}">-->
+<!--          <td th:text="${item.goods.goodsName}"></td>-->
+<!--          <td>수량 예시 4개</td>-->
+<!--          <td th:text="${item.quantity}"></td>-->
+<!--          <td th:text="${#numbers.formatCurrency(item.goods.goodsPrice)}"></td>-->
+<!--        </tr>-->
+        </tbody>
+      </table>
+      <hr>
+      <p>총 주문 금액: <span th:text="${#numbers.formatCurrency(orderTotal)}"></span></p>
+    </div>
+
+    <!-- 결제 버튼 -->
+    <div class="order-section">
+      <h2>결제</h2>
+      <button type="button" onclick="processPayment()">결제하기</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('jwtToken');
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+
+
+  // 로그인 상태 확인 및 SSE 연결 설정
+  function checkLoginStatus() {
+      const token = localStorage.getItem('jwtToken');
+<!--      await axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;-->
+      if (token) {
+          connectToNotifications();
+          console.log(token);
+         getData();
+      }
+  }
+   async function getData(){
+          try{
+            const res = await axios.get('/orders');
+            const order = res.data;
+            console.log(order);
+
+            document.getElementById('recipient').value = order.data.orderRecipient;
+            document.getElementById('address').value = order.data.orderAddress;
+            document.getElementById('phone').value = order.data.orderPhone;
+            document.getElementById('request').value = order.data.orderRequest;
+
+             // 주문 상품 리스트를 동적으로 렌더링
+            const orderListTable = document.querySelector('tbody');
+            orderListTable.innerHTML = ''; // 기존 내용 삭제
+<!--            res.data.orderList.forEach(item => {-->
+<!--                const row = `<tr>-->
+<!--                    <td>${item.goods.goodsName}</td>-->
+<!--                    <td>${item.quantity}</td>-->
+<!--                    <td>${new Intl.NumberFormat().format(item.goods.goodsPrice)} 원</td>-->
+<!--                </tr>`;-->
+<!--                orderListTable.innerHTML += row;-->
+<!--            });-->
+
+            // 총 주문 금액
+            document.querySelector('p span').textContent = `${new Intl.NumberFormat().format(order.orderTotal)} 원`;
+
+          }catch(error) {
+             console.error("메인 페이지 요청 실패 ", error);
+         }
+         }
+
+
+  // SSE 연결 함수
+  function connectToNotifications() {
+      const token = localStorage.getItem('jwtToken');
+      const eventSource = new EventSource(`/users/notifications/connect?token=${token}`);
+
+      eventSource.addEventListener('sse', function(event) {
+          if (typeof event.data === 'string' && !event.data.startsWith('EventStream')) {
+              let data;
+              try {
+                  data = JSON.parse(event.data);
+              } catch (e) {
+                  console.error('Failed to parse event data:', e);
+                  return;
+              }
+
+              if (data.alarmTitle) {
+                  alert(`[${data.alarmTitle}]이 도착했어요~~~😘 \n쿠폰함을 확인해주세요!`);
+              } else {
+                  console.error('alarmTitle not found in event data');
+              }
+          }
+      });
+
+      eventSource.onerror = function(error) {
+          console.error('SSE connection error:', error);
+          eventSource.close(); // 에러 시 SSE 연결 닫기
+      };
+  }
+
+  //결제 기능
+  function processPayment(){};
+
+  // 페이지 로드 시 로그인 상태 확인
+  checkLoginStatus();
+});
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+</html>
