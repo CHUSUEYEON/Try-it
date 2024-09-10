@@ -2,7 +2,7 @@
 <html lang="en"  xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>pay</title>
+  <title>주문내역 조회</title>
   <style>
     body {
     font-family: Arial, sans-serif;
@@ -121,9 +121,6 @@ p span {
   </style>
 </head>
 <body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-
   <div class="container">
     <h1>주문 정보</h1>
 
@@ -173,10 +170,10 @@ p span {
     </div>
 
     <!-- 결제 버튼 -->
-    <div class="order-section">
-      <h2>결제</h2>
-      <button type="button" onclick="processPayment()">결제하기</button>
-    </div>
+<!--    <div class="order-section">-->
+<!--      <h2>결제</h2>-->
+<!--      <button type="button" onclick="requestPay()" id="orderBtn">결제하기</button>-->
+<!--    </div>-->
   </div>
 
   <script>
@@ -256,10 +253,6 @@ p span {
           eventSource.close(); // 에러 시 SSE 연결 닫기
       };
   }
-
-  //결제 기능
-  function processPayment(){};
-
   // 페이지 로드 시 로그인 상태 확인
   checkLoginStatus();
 });

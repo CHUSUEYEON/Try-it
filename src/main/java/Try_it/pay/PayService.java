@@ -14,7 +14,7 @@
 //
 //    @Value("${imp.api.key}")
 //    private String apiKey;
-//    @Value("${imp.api.secret}")
+//    @Value("${imp.api.secretkey}")
 //    private String secretKey;
 //
 //

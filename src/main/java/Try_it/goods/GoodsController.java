@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/goods")
 @Tag(name = "Goods", description = "인가 필요없는 상품 관련 API")
@@ -39,7 +41,7 @@ public class GoodsController {
                                                 @RequestParam(value = "isChild", required = false) boolean isChild,
                                                 @RequestParam(value = "category", required = false) String category,
                                                @RequestParam(value = "keyword", required = false) String keyword){
-
+log.warn("ddddd {} {} {} {} {} {} {} {}",page, sort, direction, bigCategory, gender, isChild, category, keyword);
         Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, bigCategory, gender, isChild, category, keyword);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)

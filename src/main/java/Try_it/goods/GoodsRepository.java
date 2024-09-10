@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
     @Query("""
@@ -19,30 +21,39 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
     Page<GoodsEntity> findAllByKeyword(@Param("keyword") String keyword,
                                        Pageable pageable);
 
-    @Query("""
-        SELECT g FROM GoodsEntity g
-        LEFT JOIN g.category gc
-        LEFT JOIN gc.category c
-        WHERE (:gender IS NULL OR :gender = '' OR c.categoryName = :gender)
-        AND (:isChild IS NULL OR :isChild = false OR c.categoryName = '아동')
-        AND (:category IS NULL OR :category = '' OR c.categoryName = :category)
-        AND (LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR :keyword = '')
-        """)
-    Page<GoodsEntity> findAllBySwimmerFilter(@Param("gender") String gender,
-                                       @Param("isChild") Boolean isChild,
-                                       @Param("category") String category,
-                                       @Param("keyword") String keyword,
-                                       Pageable pageable);
+    @Query(
+        nativeQuery = true,
+        value = "SELECT g.*, GROUP_CONCAT(c.cate_name SEPARATOR ', ') AS categories " +
+            "FROM goods g " +
+            "LEFT JOIN goods_cate_mapping gm ON g.g_pk = gm.g_pk " +
+            "LEFT JOIN category c ON gm.cate_pk = c.cate_pk " +
+            "GROUP BY g.g_pk " +
+        "HAVING (categories LIKE CONCAT('%', :gender,'%') AND categories LIKE CONCAT('%', :category, '%') AND :isChild = false OR categories LIKE '%아동%')" +
+        "AND g.g_name LIKE CONCAT('%', :keyword, '%')"
+//        countQuery = "SELECT COUNT(*) FROM goods"
+    )
+    Page<GoodsEntity> findAllBySwimmerFilter(
+        @Param("keyword") String keyword,
+        @Param("gender") String gender,
+        @Param("category") String category,
+        @Param("isChild") boolean isChild,
+        Pageable pageable
+    );
 
-    @Query("""
-        SELECT g FROM GoodsEntity g
-        LEFT JOIN g.category gc
-        LEFT JOIN gc.category c
-        WHERE c.categoryName = :category 
-        AND LOWER(g.goodsName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        """)
-    Page<GoodsEntity> findAllBySuppliesFilter(@Param("category") String category,
-                                       @Param("keyword") String keyword,
+    @Query(
+        nativeQuery = true,
+        value = "SELECT g.*, GROUP_CONCAT(c.cate_name SEPARATOR ', ') AS categories " +
+            "FROM goods g " +
+            "LEFT JOIN goods_cate_mapping gm ON g.g_pk = gm.g_pk " +
+            "LEFT JOIN category c ON gm.cate_pk = c.cate_pk " +
+            "GROUP BY g.g_pk " +
+            "HAVING (categories LIKE CONCAT('%', :category, '%') AND :isChild = false OR categories LIKE '%아동%')" +
+            "AND g.g_name LIKE CONCAT('%', :keyword, '%')"
+//        countQuery = "SELECT COUNT(*) FROM goods"
+    )
+    Page<GoodsEntity> findAllBySuppliesFilter(@Param("keyword") String keyword,
+                                       @Param("category") String category,
+                                       @Param("isChild") boolean isChild,
                                        Pageable pageable);
 //    수영복을 선택할 경우
 //

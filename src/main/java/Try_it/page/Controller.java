@@ -26,4 +26,7 @@ public class Controller {
 
     @GetMapping("/orders")
     public String orderPage(Model model){return "order";}
+
+    @GetMapping("/payment")
+    public String payPage(Model model){return "payTest";}
 }

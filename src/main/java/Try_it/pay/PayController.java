@@ -1,6 +1,8 @@
 //package Try_it.pay;
 //
 //import Try_it.common.dto.ResDTO;
+//import Try_it.order.OrderDTO;
+//import Try_it.order.OrderEntity;
 //import com.siot.IamportRestClient.IamportClient;
 //import jakarta.annotation.PostConstruct;
 //import lombok.RequiredArgsConstructor;
@@ -10,27 +12,22 @@
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.stereotype.Controller;
 //import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RestController;
 //
-//@Controller
+//@RestController
 //@Slf4j
-//public class PayController {
+//public class PayController extends PayService {
 //    private final PayService payService;
-////    private IamportClient iamportClient;
 //
-////    @Value("${imp.api.key}")
-////    private String apiKey;
-////    @Value("${imp.api.secret}")
-////    private String secretKey;
 //
 //    @Autowired
 //    public PayController(PayService payService) {
+//        super();
 //        this.payService = payService;
 //    }
 //
-////    public void init(){
-////        this.iamportClient = new IamportClient(apiKey, secretKey);
-////    }
-//
-////    @PostMapping("/orders/payment")
-////    public ResponseEntity<ResDTO> completePayment(@Login )
+//    public ResponseEntity<ResDTO> createPayment(@RequestBody OrderDTO orderDTO){
+//        PaymentDTO paymentDTO = orderService.createOrder;
+//    }
 //}
