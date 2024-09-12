@@ -83,7 +83,7 @@ public class AuthService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(serviceEmail);
         mailMessage.setTo(to);
-        mailMessage.setSubject(String.format("Email Verificaiton For %s", to));
+        mailMessage.setSubject(String.format("[Try-it] Email Verification"));
 
         VerificationCode verificationCode = generateVerificationCode(sentAt);
         verificationCodeRepository.save(verificationCode);

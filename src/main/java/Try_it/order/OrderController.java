@@ -18,7 +18,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @Slf4j
 @RequestMapping("/orders")
 @Tag(name = "order", description = "주문 관련 API")
@@ -32,7 +32,6 @@ public class OrderController {
 
     @Operation(summary = "주문 추가 API")
     @PostMapping("/goods/{goodPk}")
-    @ResponseBody
     public ResponseEntity<ResDTO> createOrder(@AuthenticationPrincipal String userPk,
                                               @RequestParam(required = false) Long couponPk,
                                               @RequestBody OrderDTO orderDTO,
@@ -59,7 +58,6 @@ public class OrderController {
 
     @Operation(summary = "장바구니에 담긴 전체 상품 주문 API")
     @PostMapping("/goods")
-    @ResponseBody
     public ResponseEntity<ResDTO> createCartsOrder(@AuthenticationPrincipal String userPk,
                                                    @RequestParam(required = false) Long couponPk,
                                                 @RequestBody OrderDTO orderDTO
@@ -95,7 +93,6 @@ public class OrderController {
 
     @Operation(summary = "주문 상세 조회")
     @GetMapping("/{orderPk}")
-    @ResponseBody
     public ResponseEntity<ResDTO> getOrderGoods(@AuthenticationPrincipal String userPk,
                                                 @PathVariable Long orderPk){
         GoodsEntity goods = orderService.getOrderGoods(userPk, orderPk);

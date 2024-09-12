@@ -65,3 +65,7 @@ public interface GoodsRepository extends JpaRepository<GoodsEntity, Long> {
 
     GoodsEntity findByOrderList(OrderListEntity orderList);
 }
+// 필터링 Todo: bigCategory로 필터링이 안 됨.
+//  ex) 상품 1번의 카테고리 = [남성, 패킹, 아동]
+// 상품 2번의 카테고리 = [아동, 탄탄이]
+// 그럼 bigCategory 가 용품일 경우 1번 상품만 조회되어야 하는데, bigCategory=용품, isChild=true 로 값을 넣고 조회하면 둘 다 조회됨.
