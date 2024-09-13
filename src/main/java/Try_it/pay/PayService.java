@@ -1,5 +1,11 @@
 package Try_it.pay;
 
+import Try_it.goods.GoodsEntity;
+import Try_it.goods.GoodsRepository;
+import Try_it.order.OrderEntity;
+import Try_it.order.OrderRepository;
+import Try_it.user.UserEntity;
+import Try_it.user.UserRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,27 +14,54 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @Slf4j
 public class PayService {
-    private IamportClient api;
     private final PayRepository payRepository;
-
-    @Value("${imp.api.key}")
-    private String apiKey;
-    @Value("${imp.api.secretkey}")
-    private String secretKey;
-
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final GoodsRepository goodsRepository;
 
     @Autowired
-    public PayService(PayRepository payRepository){
+    public PayService(PayRepository payRepository, UserRepository userRepository, OrderRepository orderRepository, GoodsRepository goodsRepository) {
         this.payRepository = payRepository;
-        this.api = new IamportClient(apiKey, secretKey);
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.goodsRepository = goodsRepository;
     }
 
-    public PayEntity createPayment(PaymentDTO paymentDTO)
+    public PayEntity processPaymentDone(PaymentRequestDTO requestDTO, final String userPk)
         throws IamportResponseException, IOException{
+        Long orderPk = requestDTO.getOrder();
+        Long user = requestDTO.getUser();
+        UserEntity checkUser = userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
+        if(!user.equals(checkUser.getUserPk())){
+            throw new IllegalArgumentException("본인만 결제할 수 있습니다.");
+        }
+        List<Long> goodsList = requestDTO.getGoods();
+
+        OrderEntity order = orderRepository.findById(orderPk)
+            .orElseThrow(()-> new NoSuchElementException("주문 정보를 찾을 수 없습니다."));
+
+        for(Long good : goodsList){
+            GoodsEntity goods = goodsRepository.findById(good)
+                .orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
+            String paycode = UUID.randomUUID().toString();
+
+            PayEntity pay = PayEntity.builder()
+                .payCode(paycode)
+                .payIsRefunded(false)
+                .goods(goods)
+                .order(order)
+                .build();
+
+            payRepository.save(pay);
+        }
 //        checkDuplicatePayment(PaymentDTO);
         return null;
     }

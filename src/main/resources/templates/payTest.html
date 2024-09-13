@@ -128,16 +128,16 @@
       <h2>배송 정보</h2>
       <form id="paymentForm">
         <label for="recipient">수령인:</label>
-        <input type="text" id="recipient" name="orderRecipient" th:value="${orderRecipient}" required>
+        <input type="text" id="recipient" name="orderRecipient" required>
 
         <label for="address">주소:</label>
-        <input type="text" id="address" name="orderAddress" th:value="${orderAddress}" required>
+        <input type="text" id="address" name="orderAddress" required>
 
         <label for="phone">전화번호:</label>
-        <input type="tel" id="phone" name="orderPhone" th:value="${orderPhone}" required>
+        <input type="tel" id="phone" name="orderPhone" required>
 
         <label for="request">배송 요청사항:</label>
-        <textarea id="request" name="orderRequest" rows="3" cols="40" th:text="${orderRequest}"></textarea>
+        <textarea id="request" name="orderRequest" rows="3" cols="40"></textarea>
       </form>
     </div>
 
@@ -155,7 +155,7 @@
         </tbody>
       </table>
       <hr>
-      <p>총 주문 금액: <span th:text="${#numbers.formatCurrency(orderTotal)}"></span></p>
+      <p>총 주문 금액: <span id="totalPrice"></span></p>
     </div>
 
     <div class="order-section">
@@ -171,29 +171,48 @@
       const token = localStorage.getItem('jwtToken');
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+      const axiosInstance = axios.create({withCredentials: true}); // 세션값을 저장하고 사용하기 위해 호출
+
+    async function completeOrder(){
+      try{
+        const response = await axiosInstance.post('http://localhost:8080/orders/goods',{
+        orderAddress : document.getElementById("address").value
+        orderPhone : document.getElementById("phone").value
+        orderRecipient : document.getElementById("recipient").value
+        orderTotal,
+        coupon,
+        orderRequest : document.getElementById("request").value
+        });
+        console.log(response.data);
+        requestPay(response.data);
+        } catch(error){
+          console.error("completeOrder error: ",error);
+        }
+    }
+
       // 결제 기능
       var IMP = window.IMP;
       IMP.init("imp38754276");
 
-      function requestPay() {
+      function requestPay(orderInfo) {
         IMP.request_pay(
           {
             pg: "html5_inicis",
             pay_method: "card",
-            merchant_uid: "1234578",
-            name: "당근 10kg",
-            amount: 200,
-            buyer_email: "gildong@gmail.com",
-            buyer_name: "홍길동",
-            buyer_tel: "010-4242-4242",
-            buyer_addr: "서울특별시 강남구 신사동",
-            buyer_postcode: "01181"
+<!--            merchant_uid: "1234578",-->
+            name: orderInfo.,
+            amount: orderInfo.orderTotal,
+<!--            buyer_email: "gildong@gmail.com",-->
+            buyer_name: orderInfo.orderName,
+            buyer_tel: orderInfo.orderPhone,
+            buyer_addr: orderInfo.orderAddress,
+<!--            buyer_postcode: "01181"-->
           },
           function (rsp) {
             if (rsp.success) {
               $.ajax({
-                  url: "/payment/validate/" + rsp.imp_uid,
-                  method: 'GET',
+                  url: "/order/payment/" + rsp.imp_uid,
+                  method: 'POST',
                   contentType: 'application/json',
                   data: JSON.stringify({
                     imp_uid: rsp.imp_uid,
@@ -213,7 +232,7 @@
       }
 
       // 결제 버튼 클릭 이벤트
-      document.getElementById('orderBtn').addEventListener('click', requestPay);
+      document.getElementById('orderBtn').addEventListener('click', completeOrder);
 
       // 로그인 상태 확인 및 SSE 연결 설정
       function checkLoginStatus() {

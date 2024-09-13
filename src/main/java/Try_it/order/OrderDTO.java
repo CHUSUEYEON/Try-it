@@ -40,4 +40,6 @@ public class OrderDTO {
 
     private Long coupon;
 
+    private Long goods;
+
 }

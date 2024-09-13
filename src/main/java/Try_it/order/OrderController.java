@@ -6,6 +6,7 @@ import Try_it.goods.GoodsEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,35 +26,52 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final HttpSession httpSession;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, HttpSession httpSession) {
         this.orderService = orderService;
+        this.httpSession = httpSession;
     }
+//
+//    @Operation(summary = "주문 추가 API")
+//    @PostMapping("/goods/{goodPk}")
+//    public ResponseEntity<ResDTO> createOrder(@AuthenticationPrincipal String userPk,
+//                                              @RequestParam(required = false) Long couponPk,
+//                                              @RequestBody OrderDTO orderDTO,
+//                                              @PathVariable Long goodPk){
+//        OrderEntity newOrder = orderService.createOrder(userPk, orderDTO, goodPk, couponPk);
+//        OrderDTO responseOrder = OrderDTO.builder()
+//            .orderPk(newOrder.getOrderPk())
+//            .orderCreatedAt(newOrder.getOrderCreatedAt())
+//            .orderRecipient(newOrder.getOrderRecipient())
+//            .orderTotal(newOrder.getOrderTotal())
+//            .orderPhone(newOrder.getOrderPhone())
+//            .orderAddress(newOrder.getOrderAddress())
+//            .orderRequest(newOrder.getOrderRequest())
+//            .orderIsCancelled(newOrder.getOrderIsCancelled())
+//            .user(newOrder.getUser().getUserPk())
+//            .coupon(couponPk != null ? newOrder.getCoupon().getCouponPk() : null)
+//            .build();
+//        return ResponseEntity.ok().body(ResDTO.builder()
+//           .statusCode(StatusCode.OK)
+//           .data(responseOrder)
+//           .message("주문리스트에 주문 추가 성공")
+//           .build());
+//    }
 
-    @Operation(summary = "주문 추가 API")
-    @PostMapping("/goods/{goodPk}")
-    public ResponseEntity<ResDTO> createOrder(@AuthenticationPrincipal String userPk,
-                                              @RequestParam(required = false) Long couponPk,
-                                              @RequestBody OrderDTO orderDTO,
-                                              @PathVariable Long goodPk){
-        OrderEntity newOrder = orderService.createOrder(userPk, orderDTO, goodPk, couponPk);
-        OrderDTO responseOrder = OrderDTO.builder()
-            .orderPk(newOrder.getOrderPk())
-            .orderCreatedAt(newOrder.getOrderCreatedAt())
-            .orderRecipient(newOrder.getOrderRecipient())
-            .orderTotal(newOrder.getOrderTotal())
-            .orderPhone(newOrder.getOrderPhone())
-            .orderAddress(newOrder.getOrderAddress())
-            .orderRequest(newOrder.getOrderRequest())
-            .orderIsCancelled(newOrder.getOrderIsCancelled())
-            .user(newOrder.getUser().getUserPk())
-            .coupon(couponPk != null ? newOrder.getCoupon().getCouponPk() : null)
-            .build();
+    @Operation(summary = "장바구니에 담긴 전체 상품 주문 임시 저장 API")
+    @PostMapping("/goods/temp")
+    public ResponseEntity<ResDTO> createCartsTempOrder(@AuthenticationPrincipal String userPk){
+
+        List<OrderDTO> tempOrder =orderService.createCartsTempOrder(userPk);
+
+        httpSession.setAttribute("tempOrder", tempOrder);
+
         return ResponseEntity.ok().body(ResDTO.builder()
-           .statusCode(StatusCode.OK)
-           .data(responseOrder)
-           .message("주문리스트에 주문 추가 성공")
-           .build());
+            .statusCode(StatusCode.OK)
+            .data(tempOrder)
+            .message("주문 임시 저장 성공")
+            .build());
     }
 
     @Operation(summary = "장바구니에 담긴 전체 상품 주문 API")
@@ -62,10 +80,18 @@ public class OrderController {
                                                    @RequestParam(required = false) Long couponPk,
                                                 @RequestBody OrderDTO orderDTO
                                                 ){
-        List<OrderEntity> newOrders =orderService.createCartsOrder(userPk, orderDTO, couponPk);
+        List<OrderDTO> temporaryOrder = (List<OrderDTO>) httpSession.getAttribute("tempOrder");
+        if(temporaryOrder == null){
+            return ResponseEntity.badRequest().body(ResDTO.builder()
+               .statusCode(StatusCode.BAD_REQUEST)
+               .message("임시 주문 정보를 찾을 수 없습니다.")
+               .build());
+        }
+
+        List<OrderEntity> completedOrders =orderService.createCartsOrder(userPk, temporaryOrder, orderDTO, couponPk);
         return ResponseEntity.ok().body(ResDTO.builder()
             .statusCode(StatusCode.OK)
-            .data(newOrders)
+            .data(completedOrders)
             .message("주문리스트에 주문 추가 성공")
             .build());
     }
