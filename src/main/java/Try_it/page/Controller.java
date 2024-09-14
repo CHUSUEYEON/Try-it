@@ -29,4 +29,7 @@ public class Controller {
 
     @GetMapping("/payment")
     public String payPage(Model model){return "payTest";}
+
+    @GetMapping("/goodsDetail")
+    public String goodsDetailPage(Model model){return "goodsDetail";}
 }

@@ -108,26 +108,52 @@
 
     <!-- 상품 이미지 및 정보 -->
     <div class="product-details">
-      <img th:src="@{/images/sample-product.jpg}" alt="상품 이미지">
+      <img  alt="상품 이미지">
 
       <div class="product-info">
-        <h2 th:text="${goods.goodsName}">상품명</h2>
-        <p class="price" th:text="${#numbers.formatCurrency(goods.goodsPrice)}">₩ 상품가격</p>
-        <p th:text="${goods.goodsDescription}">상품 설명</p>
+        <h2>상품명</h2>
+        <p class="price">₩ 상품가격</p>
+        <p>상품 설명</p>
       </div>
     </div>
 
     <!-- 상품 설명 -->
     <div class="product-description">
       <h3>상세 설명</h3>
-      <p th:text="${goods.goodsDescription}">이 상품에 대한 추가 설명이 여기에 표시됩니다.</p>
+      <p>이 상품에 대한 추가 설명이 여기에 표시됩니다.</p>
     </div>
 
     <!-- 주문하기 버튼 -->
-    <form th:action="@{/orders}" method="post">
-      <button type="submit" class="btn-order">주문하기</button>
+    <form>
+      <button type="button" class="btn-order" id="orderBtn">주문하기</button>
     </form>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('jwtToken');
+
+      if (!token) {
+        console.error('JWT Token not found!');
+        return;
+      }
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Authorization 오타 수정
+
+      const axiosInstance = axios.create({ withCredentials: true }); // 세션값을 저장하고 사용하기 위해 호출
+
+      async function tempOrder() {
+        try {
+          const response = await axiosInstance.post('http://localhost:8080/orders/goods.temp', {}); // {} 추가하여 요청이 정상적으로 전송됨
+          console.log(response.data);
+        } catch (error) {
+          console.error("tempOrder error:", error);
+        }
+      }
+
+      document.getElementById('orderBtn').addEventListener('click', tempOrder);
+    });
+  </script>
 </body>
 </html>

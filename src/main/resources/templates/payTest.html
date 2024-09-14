@@ -176,9 +176,9 @@
     async function completeOrder(){
       try{
         const response = await axiosInstance.post('http://localhost:8080/orders/goods',{
-        orderAddress : document.getElementById("address").value
-        orderPhone : document.getElementById("phone").value
-        orderRecipient : document.getElementById("recipient").value
+        orderAddress : document.getElementById("address").value,
+        orderPhone : document.getElementById("phone").value,
+        orderRecipient : document.getElementById("recipient").value,
         orderTotal,
         coupon,
         orderRequest : document.getElementById("request").value
@@ -200,7 +200,8 @@
             pg: "html5_inicis",
             pay_method: "card",
 <!--            merchant_uid: "1234578",-->
-            name: orderInfo.,
+// Todo: 상품명 어떻게 받아올지만 하면 됨.
+            name: "test",
             amount: orderInfo.orderTotal,
 <!--            buyer_email: "gildong@gmail.com",-->
             buyer_name: orderInfo.orderName,
