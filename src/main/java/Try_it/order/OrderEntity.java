@@ -42,7 +42,7 @@ public class OrderEntity {
     private String orderAddress;
 
     @Column(name = "o_phone", nullable = false)
-    private Integer orderPhone;
+    private String orderPhone;
 
     @Column(name = "o_created_at", nullable = false)
     @CreationTimestamp

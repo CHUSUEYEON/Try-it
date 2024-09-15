@@ -113,7 +113,7 @@ public class OrderService {
 
             OrderDTO Order = OrderDTO.builder()
                 .orderAddress(user.getUserAddress())
-                .orderPhone(user.getUserPhone())
+                .orderPhone(String.valueOf(user.getUserPhone()))
                 .orderIsCancelled(false)
                 .coupon(null)
                 .orderRequest(null)
@@ -121,6 +121,7 @@ public class OrderService {
                 .orderRecipient(user.getUserName())
                 .user(user.getUserPk())
                 .goods(goods.getGoodsPk())
+                .orderQuantity(itemQuantity)
                 .build();
 
             orders.add(Order);

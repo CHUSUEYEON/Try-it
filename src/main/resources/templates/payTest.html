@@ -155,7 +155,8 @@
         </tbody>
       </table>
       <hr>
-      <p>총 주문 금액: <span id="totalPrice"></span></p>
+      <p>총 주문 금액: <span id="totalPrice">500</span></p>
+      <p>쿠폰: <span id="coupon"></span> </p>
     </div>
 
     <div class="order-section">
@@ -175,12 +176,12 @@
 
     async function completeOrder(){
       try{
-        const response = await axiosInstance.post('http://localhost:8080/orders/goods',{
+        const response = await axios.post('http://localhost:8080/orders/goods',{
         orderAddress : document.getElementById("address").value,
         orderPhone : document.getElementById("phone").value,
         orderRecipient : document.getElementById("recipient").value,
-        orderTotal,
-        coupon,
+<!--        orderTotal : document.getElementById("totalPrice").value,-->
+<!--        coupon : document.getElementById("coupon").value,-->
         orderRequest : document.getElementById("request").value
         });
         console.log(response.data);
@@ -199,11 +200,11 @@
           {
             pg: "html5_inicis",
             pay_method: "card",
-<!--            merchant_uid: "1234578",-->
+            merchant_uid: "12345732",
 // Todo: 상품명 어떻게 받아올지만 하면 됨.
             name: "test",
-            amount: orderInfo.orderTotal,
-<!--            buyer_email: "gildong@gmail.com",-->
+            amount: "100",
+            buyer_email: "gildong@gmail.com",
             buyer_name: orderInfo.orderName,
             buyer_tel: orderInfo.orderPhone,
             buyer_addr: orderInfo.orderAddress,
@@ -211,14 +212,22 @@
           },
           function (rsp) {
             if (rsp.success) {
+            const token = localStorage.getItem('jwtToken');
               $.ajax({
                   url: "/order/payment/" + rsp.imp_uid,
                   method: 'POST',
                   contentType: 'application/json',
+                  headers: {
+                  'Authorization': `Bearer ${token}`
+                  },
                   data: JSON.stringify({
-                    imp_uid: rsp.imp_uid,
-                    merchant_uid: rsp.merchant_uid,
-                    amount: rsp.paid_amount
+<!--                    imp_uid: rsp.imp_uid,-->
+<!--                    merchant_uid: rsp.merchant_uid,-->
+<!--                    amount :rsp.paid_amount,-->
+<!--                    user : 3,-->
+                    order : 15,
+<!--                    totalPrice : rsp.paid_amount,-->
+                    goods : 3
                   }),
                   }).done(function(data){
                   console.log(data);

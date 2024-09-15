@@ -10,8 +10,11 @@ import java.util.List;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentRequestDTO {
-    private  Long user;
-    private  Long order;
-    private Integer totalPrice;
-    private List<Long> goods;
+//    private  Long user;
+//    private  Long order;
+//    private Integer totalPrice;
+//    private List<Long> goods;
+    private String imp_uid;
+    private String merchant_uid;
+    private Integer amount;
 }

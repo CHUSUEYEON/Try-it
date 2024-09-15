@@ -9,6 +9,7 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,16 +41,16 @@ public class PayController{
         this.iamportClient = new IamportClient(apiKey, secretKey);
     }
 
+    @Operation(summary = "결제 API")
     @PostMapping("/order/payment/{imp_uid}")
-    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody PaymentRequestDTO requestDTO,
-                                                    @AuthenticationPrincipal String
-                                                     userPk)
+    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody OrderDTO orderDTO,
+                                                    @AuthenticationPrincipal String userPk)
         throws IamportResponseException, IOException{
         IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
 
         log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 
-        payService.processPaymentDone(requestDTO, userPk);
+        payService.processPaymentDone(orderDTO, userPk);
 
         return payment;
     }

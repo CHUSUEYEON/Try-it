@@ -8,11 +8,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
 public class GoodsService {
     final private GoodsRepository goodsRepository;
+//    String local15 = ...;
+
+//    int hashCode = Objects.hashCode(local15);
 
     public GoodsService(GoodsRepository goodsRepository) {
         this.goodsRepository = goodsRepository;
@@ -27,53 +31,33 @@ public class GoodsService {
                                           final String category,
                                           final String keyword){
 
+
+        //null 체크 후 처리
+        String safeKeyword = (keyword != null) ? keyword : "";
+        String safeGender = (gender != null) ? gender : "";
+        String safeCategory = (category != null) ? category : "";
+        String safeBigCategory = (bigCategory != null) ? bigCategory : "";
+
+
+        log.warn("ㄷㄷㄷ {} {} {} {} {} {} {} {}",page, sort, direction, bigCategory, gender, isChild, category, keyword);
+        log.warn("ㅁㄴㅇㄹㅇㄴㅁㄹㅇ {} {} {} ", safeGender, safeCategory, safeKeyword);
+
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
 
         Page<GoodsEntity> goods;
 
-        String where = "";
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sortDirection, "goodsName"));
 
-        if(gender != null && !gender.isEmpty()) {
-            where += "categories LIKE CONCAT('%', " + gender + ", '%')";
-        }
 
-        if(isChild) {
-            if(!where.isEmpty()) where += " OR ";
-            where += "categories like '%아동%'";
-        }
-
-        if(category != null && !category.isEmpty()) {
-            if(!where.isEmpty()) where += " OR ";
-            where += "categories LIKE CONCAT('%', " + category + ", '%')";
-        }
-
-        log.warn("Category {}", where);
-
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sortDirection, sort));
-
-        switch (bigCategory){
+        switch (safeBigCategory){
             case "수영복" :
-                pageable = PageRequest.of(page, 10, Sort.by(sortDirection, "g_name"));
-                goods = goodsRepository.findAllBySwimmerFilter(
-                    keyword !=  null ? keyword: "",
-                    gender !=null ? gender : "",
-                    category !=null ? category :  "",
-                    isChild,
-                    pageable);
+                goods = goodsRepository.findAllBySwimmerFilter(safeKeyword, safeGender, safeCategory, isChild, pageable);
                 break;
             case "용품" :
-                pageable = PageRequest.of(page, 10, Sort.by(sortDirection, "g_name"));
-                goods = goodsRepository.findAllBySuppliesFilter(
-                    keyword !=  null ? keyword: "",
-                    category !=null ? category :  "",
-                    isChild,
-                    pageable);
+                goods = goodsRepository.findAllBySuppliesFilter(safeKeyword, safeCategory, isChild, pageable);
                 break;
             default:
-                pageable = PageRequest.of(page, 10, Sort.by(sortDirection, "g_name"));
-                goods = goodsRepository.findAllByKeyword(
-                    keyword !=  null ? keyword: "",
-                    pageable);
+                goods = goodsRepository.findAllByKeyword(safeKeyword, pageable);
         }
 
         if(goods.isEmpty()){

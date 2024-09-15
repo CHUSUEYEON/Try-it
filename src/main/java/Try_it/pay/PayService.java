@@ -2,6 +2,7 @@ package Try_it.pay;
 
 import Try_it.goods.GoodsEntity;
 import Try_it.goods.GoodsRepository;
+import Try_it.order.OrderDTO;
 import Try_it.order.OrderEntity;
 import Try_it.order.OrderRepository;
 import Try_it.user.UserEntity;
@@ -34,34 +35,53 @@ public class PayService {
         this.goodsRepository = goodsRepository;
     }
 
-    public PayEntity processPaymentDone(PaymentRequestDTO requestDTO, final String userPk)
+    public PayEntity processPaymentDone(OrderDTO orderDTO, final String userPk)
         throws IamportResponseException, IOException{
-        Long orderPk = requestDTO.getOrder();
-        Long user = requestDTO.getUser();
+        Long orderPk = orderDTO.getOrderPk();
+//        Long user = orderDTO.getUser();
         UserEntity checkUser = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
-        if(!user.equals(checkUser.getUserPk())){
-            throw new IllegalArgumentException("본인만 결제할 수 있습니다.");
-        }
-        List<Long> goodsList = requestDTO.getGoods();
+//        if(!user.equals(checkUser.getUserPk())){
+//            throw new IllegalArgumentException("본인만 결제할 수 있습니다.");
+//        }
+
 
         OrderEntity order = orderRepository.findById(orderPk)
             .orElseThrow(()-> new NoSuchElementException("주문 정보를 찾을 수 없습니다."));
 
-        for(Long good : goodsList){
-            GoodsEntity goods = goodsRepository.findById(good)
-                .orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
-            String paycode = UUID.randomUUID().toString();
+        Long goodsPk = orderDTO.getGoods();
+        GoodsEntity goods = goodsRepository.findById(goodsPk)
+            .orElseThrow(()-> new NoSuchElementException("상품을 찾을 수 없습니다."));
 
-            PayEntity pay = PayEntity.builder()
-                .payCode(paycode)
-                .payIsRefunded(false)
-                .goods(goods)
-                .order(order)
-                .build();
+        String paycode = UUID.randomUUID().toString();
+        PayEntity pay = PayEntity.builder()
+            .payCode(paycode)
+            .payIsRefunded(false)
+            .order(order)
+            .goods(goods)
+            .build();
 
-            payRepository.save(pay);
-        }
+        payRepository.save(pay);
+
+//        List<Long> goodsList = orderDTO.getGoods();
+//
+//        OrderEntity order = orderRepository.findById(orderPk)
+//            .orElseThrow(()-> new NoSuchElementException("주문 정보를 찾을 수 없습니다."));
+//
+//        for(Long good : goodsList){
+//            GoodsEntity goods = goodsRepository.findById(good)
+//                .orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다."));
+//            String paycode = UUID.randomUUID().toString();
+//
+//            PayEntity pay = PayEntity.builder()
+//                .payCode(paycode)
+//                .payIsRefunded(false)
+//                .goods(goods)
+//                .order(order)
+//                .build();
+//
+//            payRepository.save(pay);
+//        }
 //        checkDuplicatePayment(PaymentDTO);
         return null;
     }

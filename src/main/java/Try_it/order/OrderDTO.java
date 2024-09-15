@@ -30,11 +30,13 @@ public class OrderDTO {
 
     private String orderAddress;
 
-    private Integer orderPhone;
+    private String orderPhone;
 
     private Timestamp orderCreatedAt;
 
     private Boolean orderIsCancelled;
+
+    private Integer orderQuantity;
 
     private Long user;
 

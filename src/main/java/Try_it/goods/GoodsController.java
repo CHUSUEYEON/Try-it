@@ -42,7 +42,13 @@ public class GoodsController {
                                                 @RequestParam(value = "category", required = false) String category,
                                                @RequestParam(value = "keyword", required = false) String keyword){
 log.warn("ddddd {} {} {} {} {} {} {} {}",page, sort, direction, bigCategory, gender, isChild, category, keyword);
-        Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, bigCategory, gender, isChild, category, keyword);
+        String safeKeyword = (keyword != null) ? keyword : "";
+        String safeGender = (gender != null) ? gender : "";
+        String safeCategory = (category != null) ? category : "";
+        String safeBigCategory = (bigCategory != null) ? bigCategory : "";
+        log.warn("ㅋㅋㅋㅋ{} {} {} {}", safeGender, safeCategory, safeKeyword, safeBigCategory);
+
+        Page<GoodsEntity> goods = goodsService.getGoodsList(page, sort, direction, bigCategory, safeGender, isChild, safeCategory, safeKeyword);
         return ResponseEntity.ok().body(ResDTO.builder()
            .statusCode(StatusCode.OK)
            .message("상품 조회 성공")
