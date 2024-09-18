@@ -43,14 +43,19 @@ public class PayController{
 
     @Operation(summary = "결제 API")
     @PostMapping("/order/payment/{imp_uid}")
-    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody OrderDTO orderDTO,
+    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody PaymentRequestDTO paymentRequestDTO,
                                                     @AuthenticationPrincipal String userPk)
         throws IamportResponseException, IOException{
+        log.info("결제 들어갔니?");
+        log.info("imp_uid : {}", imp_uid);
+        log.info("paymentRequestDTO : {}", paymentRequestDTO);
+        log.info("iamportClient : {}", iamportClient.paymentByImpUid(imp_uid).toString());
         IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
+        log.info("payment: {}", payment);
 
         log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 
-        payService.processPaymentDone(orderDTO, userPk);
+        payService.processPaymentDone(paymentRequestDTO, userPk);
 
         return payment;
     }

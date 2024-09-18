@@ -200,7 +200,7 @@
           {
             pg: "html5_inicis",
             pay_method: "card",
-            merchant_uid: "12345732",
+            merchant_uid: "123434570",
 // Todo: 상품명 어떻게 받아올지만 하면 됨.
             name: "test",
             amount: "100",
@@ -213,6 +213,14 @@
           function (rsp) {
             if (rsp.success) {
             const token = localStorage.getItem('jwtToken');
+            const data = JSON.stringify({
+                    imp_uid: rsp.imp_uid,
+                    merchant_uid: rsp.merchant_uid,
+                    amount :rsp.paid_amount,
+                    order : 38,
+                    goods : 3
+                  })
+                  console.log("----------"+data);
               $.ajax({
                   url: "/order/payment/" + rsp.imp_uid,
                   method: 'POST',
@@ -220,15 +228,7 @@
                   headers: {
                   'Authorization': `Bearer ${token}`
                   },
-                  data: JSON.stringify({
-<!--                    imp_uid: rsp.imp_uid,-->
-<!--                    merchant_uid: rsp.merchant_uid,-->
-<!--                    amount :rsp.paid_amount,-->
-<!--                    user : 3,-->
-                    order : 15,
-<!--                    totalPrice : rsp.paid_amount,-->
-                    goods : 3
-                  }),
+                  data,
                   }).done(function(data){
                   console.log(data);
                   alert("결제 성공");

@@ -35,9 +35,10 @@ public class PayService {
         this.goodsRepository = goodsRepository;
     }
 
-    public PayEntity processPaymentDone(OrderDTO orderDTO, final String userPk)
+    public PayEntity processPaymentDone(PaymentRequestDTO paymentRequestDTO, final String userPk)
         throws IamportResponseException, IOException{
-        Long orderPk = orderDTO.getOrderPk();
+        log.info("paymnet service");
+        Long orderPk = paymentRequestDTO.getOrder();
 //        Long user = orderDTO.getUser();
         UserEntity checkUser = userRepository.findByUserPk(Long.valueOf(userPk))
             .orElseThrow(()-> new IllegalArgumentException("로그인을 해주세요."));
@@ -49,7 +50,7 @@ public class PayService {
         OrderEntity order = orderRepository.findById(orderPk)
             .orElseThrow(()-> new NoSuchElementException("주문 정보를 찾을 수 없습니다."));
 
-        Long goodsPk = orderDTO.getGoods();
+        Long goodsPk = paymentRequestDTO.getGoods();
         GoodsEntity goods = goodsRepository.findById(goodsPk)
             .orElseThrow(()-> new NoSuchElementException("상품을 찾을 수 없습니다."));
 
