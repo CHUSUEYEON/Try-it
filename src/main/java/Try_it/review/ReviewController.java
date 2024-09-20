@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,11 @@ public class ReviewController {
         this.reviewService = reviewService;
         this.fileUpload = fileUpload;
     }
-    @Operation(summary = "리뷰 등록", description = "requestbody : 리뷰내용, 별점, (사진) / path : 상품Pk/토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리뷰 등록 성공"),
-        @ApiResponse(responseCode = "400", description = "리뷰 등록 실패")
-    })
-    @PostMapping("/{goodsPk}")
+    @Operation(summary = "리뷰 등록", description = "reviewDTO : {\n" +
+        "  \"reviewContent\": \"리뷰입니다.\",\n" +
+        "  \"reviewRate\": 4\n" +
+        "}/ 파일 업로드 가능(필수 아님) / path : 상품Pk / 토큰 필요")
+    @PostMapping(value = "/{goodsPk}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO> createReview(@AuthenticationPrincipal String userPk,
                                                @RequestPart(required = false) List<MultipartFile> files,
                                                @Valid @RequestPart ReviewDTO reviewDTO,
@@ -62,12 +62,11 @@ public class ReviewController {
            .build());
     }
 
-    @Operation(summary = "리뷰 수정", description = "requestbody : 리뷰내용, 별점 사진(필수 아님) / path : 리뷰Pk/해당 유저 토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리뷰 수정 성공"),
-        @ApiResponse(responseCode = "400", description = "리뷰 수정 실패")
-    })
-    @PatchMapping("/{reviewPk}")
+    @Operation(summary = "리뷰 수정", description = "reviewDTO : {\n" +
+        "  \"reviewContent\": \"리뷰 수정 입니다.\",\n" +
+        "  \"reviewRate\": 5\n" +
+        "}/ 파일 업로드 가능(필수 아님) / path : 상품Pk / 토큰 필요")
+    @PatchMapping(value = "/{reviewPk}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO> updateReview(@AuthenticationPrincipal String userPk,
                                                @RequestPart(required = false) List<MultipartFile> files,
                                                @Valid @RequestPart ReviewDTO reviewDTO,
@@ -91,11 +90,7 @@ public class ReviewController {
             .build());
     }
 
-    @Operation(summary = "리뷰 삭제", description = "path : 리뷰Pk / 해당 토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공"),
-        @ApiResponse(responseCode = "400", description = "리뷰 삭제 실패")
-    })
+    @Operation(summary = "리뷰 삭제", description = "path : 리뷰Pk / 토큰 필요")
     @DeleteMapping("/{reviewPk}")
     public ResponseEntity<ResDTO> deleteReview(@PathVariable Long reviewPk,
                                                @AuthenticationPrincipal String userPk){
@@ -106,20 +101,4 @@ public class ReviewController {
            .message("리뷰 삭제 성공")
            .build());
     }
-
-
-//    @DeleteMapping("/img/{reviewPk}")
-//    public ResponseEntity<ResDTO> deleteReviewImg(@PathVariable Long reviewPk,
-//                                                  @AuthenticationPrincipal String userPk){
-//        ReviewEntity deletedReviewImg = reviewService.deleteReviewImg(reviewPk, userPk);
-//        return ResponseEntity.ok().body(ResDTO.builder()
-//           .statusCode(StatusCode.OK)
-//           .data(deletedReviewImg)
-//           .message("리뷰 이미지 삭제 성공")
-//           .build());
-//    }
-
-
-
-
 }

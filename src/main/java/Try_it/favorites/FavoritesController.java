@@ -23,10 +23,6 @@ public class FavoritesController {
     }
 
     @Operation(summary = "찜 추가", description = " path : 상품Pk / 토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "찜 등록 성공"),
-        @ApiResponse(responseCode = "400", description = "찜 등록 실패")
-    })
     @PostMapping("/{goodsPk}")
     public ResponseEntity<ResDTO> addFavorite(@AuthenticationPrincipal String userPk,
                                               @PathVariable Long goodsPk){
@@ -40,11 +36,7 @@ public class FavoritesController {
     }
 
 
-    @Operation(summary = "찜 삭제", description = "path : 찜Pk / 해당 토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "찜 삭제 성공"),
-        @ApiResponse(responseCode = "400", description = "찜 삭제 실패")
-    })
+    @Operation(summary = "찜 삭제", description = "path : 찜Pk / 토큰 필요")
     @DeleteMapping("/{favPk}")
     public ResponseEntity<ResDTO> removeFavorite(@AuthenticationPrincipal String userPk,
                                @PathVariable Long favPk) {

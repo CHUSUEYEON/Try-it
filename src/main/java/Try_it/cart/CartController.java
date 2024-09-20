@@ -27,7 +27,9 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @Operation(summary = "장바구니에 상품 추가")
+    @Operation(summary = "장바구니에 상품 추가", description = "cartDTO : {\n" +
+        "  \"cartAmount\": 3\n" +
+        "} / goodsPk, 토큰 필요")
     @PostMapping("/goods/{goodsPk}")
     public ResponseEntity<ResDTO> addCart(@AuthenticationPrincipal String userPk,
                                           @PathVariable Long goodsPk,
@@ -49,7 +51,7 @@ public class CartController {
            .build());
     }
 
-    @Operation(summary = "장바구니에 있는 상품 삭제")
+    @Operation(summary = "장바구니에 있는 상품 삭제", description = "goodsPk, 토큰 필요")
     @DeleteMapping("/goods/{goodsPk}")
     public ResponseEntity<ResDTO> deleteGoodsInCart(@AuthenticationPrincipal String userPk,
                                                     @PathVariable Long goodsPk) {
@@ -61,7 +63,7 @@ public class CartController {
             .build());
     }
 
-    @Operation(summary = "장바구니에 있는 상품 삭제")
+    @Operation(summary = "장바구니에 있는 전체 상품 삭제", description = "토큰 필요")
     @DeleteMapping("")
     public ResponseEntity<ResDTO> deleteCart(@AuthenticationPrincipal String userPk) {
         cartService.deleteCart(userPk);
@@ -72,7 +74,9 @@ public class CartController {
             .build());
     }
 
-    @Operation(summary = "장바구니에 있는 상품 수량 변경")
+    @Operation(summary = "장바구니에 있는 상품 수량 변경", description = "cartDTO : {\n" +
+        "  \"cartAmount\": 5\n" +
+        "} / goodsPk, 토큰 필요")
     @PatchMapping("/{cartPk}")
     public ResponseEntity<ResDTO> updateCart(@AuthenticationPrincipal String userPk,
                                              @RequestBody CartDTO cartDTO,
@@ -86,7 +90,7 @@ public class CartController {
         }
 
 
-    @Operation(summary = "장바구니 조회")
+    @Operation(summary = "장바구니 조회", description = "토큰 필요")
     @GetMapping
     public ResponseEntity<ResDTO<Object>> getCarts(@AuthenticationPrincipal String userPk,
                                            @RequestParam(value = "page", defaultValue = "0") Integer page,

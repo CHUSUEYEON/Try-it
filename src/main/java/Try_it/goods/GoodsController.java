@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/goods")
-@Tag(name = "Goods", description = "인가 필요없는 상품 관련 API")
+@Tag(name = "Goods", description = "인가 필요없는 상품 관련 API(토큰 필요없습니다.)")
 @Slf4j
 public class GoodsController {
 
@@ -27,11 +27,7 @@ public class GoodsController {
         this.goodsService = goodsService;
     }
 
-    @Operation(summary = "상품 조회", description = "keyword로 검색 가능")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
-        @ApiResponse(responseCode = "400", description = "상품 조회 실패")
-    })
+    @Operation(summary = "상품 조회", description = "필터링 >>> bigCategory : 수영복, 용품 / gender : 여성, 남성 / isChild : true, false/ category : 원피스, 탄탄이, 패킹, 노패킹, 실리콘, 메쉬 /keyword로 검색 가능 / 아무것도 설정 안할 경우 전체 조회")
     @GetMapping("")
     public ResponseEntity<ResDTO<Object>> getGoodsList(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                                @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
@@ -57,10 +53,6 @@ log.warn("ddddd {} {} {} {} {} {} {} {}",page, sort, direction, bigCategory, gen
     }
 
     @Operation(summary = "상품 상세 조회", description = "path : goodsPk")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "상품 조회 성공"),
-        @ApiResponse(responseCode = "400", description = "상품 조회 실패")
-    })
     @GetMapping("/{goodsPk}")
     public ResponseEntity<ResDTO<Object>> getGoods(@PathVariable("goodsPk") Long goodsPk){
         GoodsEntity goods = goodsService.getGoods(goodsPk);

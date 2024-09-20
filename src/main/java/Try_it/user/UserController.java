@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/users")
 @Tag(name = "User", description = "회원 관련 API")
 public class UserController {
 
@@ -31,11 +31,9 @@ public class UserController {
         this.favoritesService = favoritesService;
     }
 
-    @Operation(summary = "회원 탈퇴", description = "requestBody : 패스워드, authentication : 토큰 필요(로그인 상태)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
-        @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패")
-    })
+    @Operation(summary = "회원 탈퇴", description = "requestBody : {\n" +
+        "  \"userPassword\": \"qwer1234!\"\n" +
+        "} 패스워드 / 해당 유저의 토큰 필요")
     @DeleteMapping("")
     public ResponseEntity<ResDTO> deleteUser(@Valid @RequestBody UserDTO userDTO,
                                              @AuthenticationPrincipal String userPk
@@ -59,10 +57,6 @@ public class UserController {
     }
 
     @Operation(summary = "찜 목록 조회", description = "토큰 필요")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "찜 조회 성공"),
-        @ApiResponse(responseCode = "400", description = "찜 조회 실패")
-    })
     @GetMapping("/favorites")
     public ResponseEntity<ResDTO> getFavorites(@AuthenticationPrincipal String userPk){
         List<FavoritesEntity> getFavorites = favoritesService.get(userPk);
@@ -74,6 +68,6 @@ public class UserController {
             .message("찜 조회 성공")
             .build());
     }
-    //..
+
 
 }

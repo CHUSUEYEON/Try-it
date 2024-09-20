@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,8 +32,9 @@ public class CouponService {
         UserEntity user = userRepository.findAdminByUserPk(Long.valueOf(userPk))
             .orElseThrow(()-> new IllegalArgumentException("관리자로 로그인 해주세요."));
 
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0, 6);
         CouponEntity newCoupon = CouponEntity.builder()
-            .couponCode(couponDTO.getCouponCode())
+            .couponCode(code)
             .couponContent(couponDTO.getCouponContent())
             .couponPrice(couponDTO.getCouponPrice())
             .couponDeadline(couponDTO.getCouponDeadline())

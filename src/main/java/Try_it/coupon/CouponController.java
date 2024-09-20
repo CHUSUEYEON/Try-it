@@ -26,7 +26,12 @@ public class CouponController {
         this.couponService = couponService;
     }
 
-    @Operation(summary = "쿠폰 생성 api")
+    @Operation(summary = "쿠폰 생성 api", description = " couponDTO : {\n" +
+        "  \"couponName\": \"추석 특집 할인\",\n" +
+        "  \"couponDiscountRate\": 10,\n" +
+        "  \"couponDeadline\": \"2024년 11월 10일\",\n" +
+        "  \"couponContent\": \"추석 특집으로 모든 회원들게 10퍼센트 할인 쿠폰 드립니다.\"\n" +
+        "} / 관리자 토큰 필요")
     @PostMapping
     public ResponseEntity<ResDTO> createCoupon(@AuthenticationPrincipal String userPk,
                                                @RequestBody CouponDTO couponDTO
@@ -50,7 +55,10 @@ public class CouponController {
            .build());
     }
 
-    @Operation(summary = "쿠폰 전송 api")
+    @Operation(summary = "쿠폰 전송 api", description = "alarmDTO : {\n" +
+        "  \"alarmContent\": \"알림입니다.\",\n" +
+        "  \"alarmTitle\": \"알림 제목\"\n" +
+        "} / 쿠폰 Pk, 관리자 토큰 필요")
     @PostMapping("/{couponPk}")
     public ResponseEntity<ResDTO> sendCoupon(@AuthenticationPrincipal String userPk,
                                              @RequestBody AlarmDTO alarmDTO,

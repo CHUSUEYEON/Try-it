@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Auth", description = "로그인, 회원가입 관련 API(인가X)")
+@Tag(name = "Auth", description = "로그인, 회원가입 관련 API(인가X, 토큰 필요없습니다.)")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     @Value("${coolsms.api.key}")
@@ -69,12 +69,16 @@ public class AuthController {
         this.messageService = NurigoApp.INSTANCE.initialize(apikey, apiSecret, "https://api.coolsms.co.kr");
     }
 
-    @Operation(summary = "회원가입", description = " requestBody : 아이디, 닉네임, 패스워드, 이름, 주소, 성별, 연락처, 이메일 ")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-        @ApiResponse(responseCode = "400")
-    })
-    @PostMapping("/register")
+    @Operation(summary = "회원가입", description = " requestBody : {\n" +
+        "  \"userId\": \"chuchu\",\n" +
+        "  \"userName\": \"추수연\",\n" +
+        "  \"userPassword\": \"qwer1234!\",\n" +
+        "  \"userEmail\": \"chu@naver.com\",\n" +
+        "  \"userPhone\": 1012345678,\n" +
+        "  \"userGender\": true,\n" +
+        "  \"userAddress\": \"서울시 서대문구 홍은동\"\n" +
+        "} ")
+    @PostMapping("/users")
     public ResponseEntity<ResDTO> register(@Valid @RequestBody UserDTO userDTO) {
 
         UserEntity user = UserEntity.builder()
@@ -113,17 +117,12 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "로그인", description = "requestBody : 아이디, 패스워드")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "로그인 성공"),
-        @ApiResponse(responseCode = "400", description = "로그인 실패")
-    })
+    @Operation(summary = "로그인", description = "requestBody : { \"userId\" : \"admin\", \"userPassword\" : \"1234\"}")
     @PostMapping("/login")
     public ResponseEntity<ResDTO> login(@Valid @RequestBody UserDTO userDTO){
         UserEntity user = authService.getUserByCredentials(userDTO.getUserId(), userDTO.getUserPassword());
         if(user != null){
             String token = tokenProvider.create(user);
-            log.info("*****controller token: {}", token);
             final UserDTO responseUserDTO = UserDTO.builder()
                 .userId(user.getUserId())
                 .userPk(user.getUserPk())
@@ -152,11 +151,9 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "메일 인증코드 보내기", description = "requestBody : 이메일(인가X)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "인증 코드 전송 성공"),
-        @ApiResponse(responseCode = "400", description = "인증 코드 전송 실패")
-    })
+    @Operation(summary = "메일 인증코드 보내기", description = "requestBody : {\n" +
+        "  \"email\": \"test@example.com\"\n" +
+        "}")
     @PostMapping("/email")
     public ResponseEntity<ResDTO> sendEmail(@Valid @RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
@@ -170,11 +167,9 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "메일 인증", description = "requestBody : 인증 코드(인가X)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "인증 성공"),
-        @ApiResponse(responseCode = "400", description = "인증 실패")
-    })
+    @Operation(summary = "메일 인증", description = "requestBody : {\n" +
+        "  \"code\": \"string\"\n" +
+        "}")
     @PostMapping("/verify-email")
     public ResponseEntity<ResDTO> verifyEmail(@RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
@@ -187,11 +182,9 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "핸드폰 인증 코드 인증", description = "requestBody : phone 번호(인가X)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "메시지 전송 성공"),
-        @ApiResponse(responseCode = "400", description = "메시지 전송 실패")
-    })
+    @Operation(summary = "핸드폰 인증 코드 인증", description = "requestBody : {\n" +
+        "  \"phone\": \"1012345678\"\n" +
+        "}")
     @PostMapping("/phone")
     public ResponseEntity<ResDTO> sendMessage(@Valid @RequestBody VerificationDTO verificationDTO)throws IOException{
 
@@ -215,11 +208,9 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "핸드폰 인증", description = "RequestBody : code(인가X)")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "핸드폰 인증 성공"),
-        @ApiResponse(responseCode = "400", description = "핸드폰 인증 실패")
-    })
+    @Operation(summary = "핸드폰 인증", description = "RequestBody : {\n" +
+        "  \"code\": \"string\"\n" +
+        "}")
     @PostMapping("/verify-phone")
     public ResponseEntity<ResDTO> verifyPhone(@RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();

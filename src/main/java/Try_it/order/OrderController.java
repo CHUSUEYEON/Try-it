@@ -59,7 +59,8 @@ public class OrderController {
 //           .build());
 //    }
 
-    @Operation(summary = "장바구니에 담긴 전체 상품 주문 임시 저장 API")
+    @Operation(summary = "장바구니에 담긴 전체 상품 주문 임시 저장 API", description = "토큰 필요/ * 세션에 정보를 저장했기에 스웨거페이지에서 직접적인 확인은 불가능하나, 토큰을 넣어 실행했을 경우" +
+        " 해당 유저의 장바구니에 담긴 상품들이 임시 저장 성공했다는 메시지가 나오면 해당 API가 성공적으로 처리됐음을 알 수 있습니다.")
     @PostMapping("/goods/temp")
     public ResponseEntity<ResDTO> createCartsTempOrder(@AuthenticationPrincipal String userPk){
 
@@ -74,7 +75,12 @@ public class OrderController {
             .build());
     }
 
-    @Operation(summary = "장바구니에 담긴 전체 상품 주문 API")
+    @Operation(summary = "장바구니에 담긴 전체 상품 주문 API", description = "orderDTO : {\n" +
+        "  \"orderRequest\": \"\b경비실에 맡겨주세요.\",\n" +
+        "  \"orderRecipient\": \"추수연\",\n" +
+        "  \"orderAddress\": \"서울시 서대문구 홍은동\",\n" +
+        "  \"orderPhone\": \"1012345678\"\n" +
+        "} / 쿠폰Pk(필수 아님), 토큰 필요")
     @PostMapping("/goods")
     public ResponseEntity<ResDTO> createCartsOrder(@AuthenticationPrincipal String userPk,
                                                    @RequestParam(required = false) Long couponPk,
@@ -96,18 +102,18 @@ public class OrderController {
             .build());
     }
 
-    @Operation(summary = "주문 목록 조회")
+    @Operation(summary = "주문 목록 조회", description = "토큰 필요")
     @GetMapping
     public ResponseEntity<ResDTO> getOrderList(@AuthenticationPrincipal String userPk,
                                Model model){
-        OrderEntity orderList = orderService.getOrderList(userPk);
-        log.warn(orderList.toString());
-        model.addAttribute("orderRecipient", orderList.getOrderRecipient());
-        model.addAttribute("orderAddress", orderList.getOrderAddress());
-        model.addAttribute("orderPhone", orderList.getOrderPhone());
-        model.addAttribute("orderRequest", orderList.getOrderRequest());
-        model.addAttribute("orderList", orderList.getOrderList());
-        model.addAttribute("orderTotal", orderList.getOrderTotal());
+        List<OrderEntity> orderList = orderService.getOrderList(userPk);
+//        log.warn(orderList.toString());
+//        model.addAttribute("orderRecipient", orderList.getOrderRecipient());
+//        model.addAttribute("orderAddress", orderList.getOrderAddress());
+//        model.addAttribute("orderPhone", orderList.getOrderPhone());
+//        model.addAttribute("orderRequest", orderList.getOrderRequest());
+//        model.addAttribute("orderList", orderList.getOrderList());
+//        model.addAttribute("orderTotal", orderList.getOrderTotal());
 
 //        return "order";}
         return ResponseEntity.ok().body(ResDTO.builder()
@@ -117,7 +123,7 @@ public class OrderController {
            .build());
     }
 
-    @Operation(summary = "주문 상세 조회")
+    @Operation(summary = "주문 상세 조회", description = "토큰, orderPk 필요")
     @GetMapping("/{orderPk}")
     public ResponseEntity<ResDTO> getOrderGoods(@AuthenticationPrincipal String userPk,
                                                 @PathVariable Long orderPk){

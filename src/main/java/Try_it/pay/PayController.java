@@ -41,7 +41,7 @@ public class PayController{
         this.iamportClient = new IamportClient(apiKey, secretKey);
     }
 
-    @Operation(summary = "결제 API")
+    @Operation(summary = "결제 API", description = "현재 진행 중인 API 입니다.")
     @PostMapping("/order/payment/{imp_uid}")
     public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody PaymentRequestDTO paymentRequestDTO,
                                                     @AuthenticationPrincipal String userPk)
