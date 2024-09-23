@@ -60,6 +60,11 @@ public class PayController{
 //        return payment;
 //    }
 
+    @Operation(summary = "결제 API", description = "{\n" +
+        "  \"imp_uid\": \"imp_786542026571\",\n" +
+        "  \"order\": 1,\n" +
+        "  \"goods\": 3\n" +
+        "} / order 와 goods 는 조회 시 존재하는 pk로 넣어야 합니다. / 토큰 필요")
     @PostMapping("/order/payment/{imp_uid}")
     public ResponseEntity<ResDTO> createPayment(@PathVariable String imp_uid,
                                                 @RequestBody PaymentRequestDTO paymentRequestDTO,

@@ -15,8 +15,8 @@ public class PaymentRequestDTO {
 //    private Integer totalPrice;
 //    private List<Long> goods;
     private String imp_uid;
-    private String merchant_uid;
-    private Integer amount;
+//    private String merchant_uid;
+//    private Integer amount;
     private Long order;
     private Long goods;
 }
