@@ -54,7 +54,9 @@ public class PayService {
         GoodsEntity goods = goodsRepository.findById(goodsPk)
             .orElseThrow(()-> new NoSuchElementException("상품을 찾을 수 없습니다."));
 
-        String paycode = UUID.randomUUID().toString();
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0, 6);
+
+        String paycode = UUID.randomUUID().toString().substring(0, 10);
         PayEntity pay = PayEntity.builder()
             .payCode(paycode)
             .payIsRefunded(false)

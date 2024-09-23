@@ -41,22 +41,38 @@ public class PayController{
         this.iamportClient = new IamportClient(apiKey, secretKey);
     }
 
-    @Operation(summary = "결제 API", description = "현재 진행 중인 API 입니다.")
+//    @Operation(summary = "결제 API", description = "현재 진행 중인 API 입니다.")
+//    @PostMapping("/order/payment/{imp_uid}")
+//    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody PaymentRequestDTO paymentRequestDTO,
+//                                                    @AuthenticationPrincipal String userPk)
+//        throws IamportResponseException, IOException{
+//        log.info("결제 들어갔니?");
+//        log.info("imp_uid : {}", imp_uid);
+//        log.info("paymentRequestDTO : {}", paymentRequestDTO);
+//        log.info("iamportClient : {}", iamportClient.paymentByImpUid(imp_uid).toString());
+//        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
+//        log.info("payment: {}", payment);
+//
+//        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
+//
+//        payService.processPaymentDone(paymentRequestDTO, userPk);
+//
+//        return payment;
+//    }
+
     @PostMapping("/order/payment/{imp_uid}")
-    public IamportResponse<Payment> validateIamport(@PathVariable String imp_uid, @RequestBody PaymentRequestDTO paymentRequestDTO,
-                                                    @AuthenticationPrincipal String userPk)
-        throws IamportResponseException, IOException{
-        log.info("결제 들어갔니?");
+    public ResponseEntity<ResDTO> createPayment(@PathVariable String imp_uid,
+                                                @RequestBody PaymentRequestDTO paymentRequestDTO,
+                                                @AuthenticationPrincipal String userPk)
+    throws IamportResponseException, IOException {
         log.info("imp_uid : {}", imp_uid);
         log.info("paymentRequestDTO : {}", paymentRequestDTO);
-        log.info("iamportClient : {}", iamportClient.paymentByImpUid(imp_uid).toString());
-        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
-        log.info("payment: {}", payment);
-
-        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 
         payService.processPaymentDone(paymentRequestDTO, userPk);
 
-        return payment;
+        return ResponseEntity.ok().body(ResDTO.builder()
+               .statusCode(StatusCode.OK)
+               .message("결제 성공")
+               .build());
     }
 }

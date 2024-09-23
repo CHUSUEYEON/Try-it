@@ -23,7 +23,7 @@ public class PayEntity {
     @Column(name = "p_pk", updatable = false)
     private Long payPk;
 
-    @Column(name = "r_file", nullable = false, length = 30)
+    @Column(name = "p_code", nullable = false, length = 30)
     private String payCode;
 
     @Column(name = "p_is_refunded", nullable = false)
