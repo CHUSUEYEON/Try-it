@@ -69,15 +69,22 @@ public class AuthController {
         this.messageService = NurigoApp.INSTANCE.initialize(apikey, apiSecret, "https://api.coolsms.co.kr");
     }
 
-    @Operation(summary = "회원가입", description = " requestBody : {\n" +
-        "  \"userId\": \"chuchu\",\n" +
-        "  \"userName\": \"추수연\",\n" +
-        "  \"userPassword\": \"qwer1234!\",\n" +
-        "  \"userEmail\": \"chu@naver.com\",\n" +
-        "  \"userPhone\": 1012345678,\n" +
-        "  \"userGender\": true,\n" +
-        "  \"userAddress\": \"서울시 서대문구 홍은동\"\n" +
-        "} ")
+    @Operation(summary = "회원가입", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "userId": "chuchu", "userName": "추수연", "userPassword": "qwer1234!", "userEmail": "chu@naver.com", "userPhone": 1012345678, "userGender": true, "userAddress": "서울시 서대문구 홍은동" }
+        """
+//        "" " +
+//        "\n requestBody : {\n" +
+//        "  \"userId\": \"chuchu\",\n" +
+//        "  \"userName\": \"추수연\",\n" +
+//        "  \"userPassword\": \"qwer1234!\",\n" +
+//        "  \"userEmail\": \"chu@naver.com\",\n" +
+//        "  \"userPhone\": 1012345678,\n" +
+//        "  \"userGender\": true,\n" +
+//        "  \"userAddress\": \"서울시 서대문구 홍은동\"\n" +
+//        "} "
+        )
     @PostMapping("/users")
     public ResponseEntity<ResDTO> register(@Valid @RequestBody UserDTO userDTO) {
 

@@ -22,7 +22,12 @@ public class FavoritesController {
         this.favoritesService = favoritesService;
     }
 
-    @Operation(summary = "찜 추가", description = " path : 상품Pk / 토큰 필요")
+    @Operation(summary = "찜 추가", description = """
+            goodsPk : 4  \s
+            인증/인가 : 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @PostMapping("/{goodsPk}")
     public ResponseEntity<ResDTO> addFavorite(@AuthenticationPrincipal String userPk,
                                               @PathVariable Long goodsPk){
@@ -36,7 +41,12 @@ public class FavoritesController {
     }
 
 
-    @Operation(summary = "찜 삭제", description = "path : 찜Pk / 토큰 필요")
+    @Operation(summary = "찜 삭제", description = """
+            favPk : 1  \s
+            인증/인가 : 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @DeleteMapping("/{favPk}")
     public ResponseEntity<ResDTO> removeFavorite(@AuthenticationPrincipal String userPk,
                                @PathVariable Long favPk) {

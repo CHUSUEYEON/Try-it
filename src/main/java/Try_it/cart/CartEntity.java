@@ -32,7 +32,7 @@ public class CartEntity {
     @Column(name = "c_is_paid", nullable = false)
     private Boolean cartIsPaid;
 
-    @Column(name = "c_careatd_at", nullable = false)
+    @Column(name = "c_created_at", nullable = false)
     @CreationTimestamp
     private Timestamp cartCreatedAt;
 

@@ -200,7 +200,7 @@
           {
             pg: "html5_inicis",
             pay_method: "card",
-            merchant_uid: "122344343",
+            merchant_uid: "1234234489",
             name: "test",
             amount: "100",
             buyer_email: "gildong@gmail.com",
@@ -221,7 +221,7 @@
                   })
                   console.log("----------"+data);
               $.ajax({
-                  url: "/order/payment/" + rsp.imp_uid,
+                  url: "/order/payment",
                   method: 'POST',
                   contentType: 'application/json',
                   headers: {
@@ -231,7 +231,7 @@
                   }).done(function(data){
                   console.log(data);
                   alert("결제 성공");
-<!--                  window.location.href = "/payment/success";-->
+                  /* window.location.href = "/payment/success"; */
                  })
             } else {
               alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);

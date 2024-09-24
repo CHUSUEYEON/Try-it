@@ -55,6 +55,7 @@ public class PayService {
             .orElseThrow(()-> new NoSuchElementException("상품을 찾을 수 없습니다."));
 
         String paycode = UUID.randomUUID().toString().substring(0, 10);
+
         PayEntity pay = PayEntity.builder()
             .payCode(paycode)
             .payIsRefunded(false)

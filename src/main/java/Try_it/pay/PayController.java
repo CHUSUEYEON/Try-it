@@ -65,13 +65,20 @@ public class PayController{
         "  \"order\": 1,\n" +
         "  \"goods\": 3\n" +
         "} / order 와 goods 는 조회 시 존재하는 pk로 넣어야 합니다. / 토큰 필요")
-    @PostMapping("/order/payment/{imp_uid}")
-    public ResponseEntity<ResDTO> createPayment(@PathVariable String imp_uid,
-                                                @RequestBody PaymentRequestDTO paymentRequestDTO,
+    @PostMapping("/order/payment")
+    public ResponseEntity<ResDTO> createPayment(@RequestBody PaymentRequestDTO paymentRequestDTO,
                                                 @AuthenticationPrincipal String userPk)
     throws IamportResponseException, IOException {
-        log.info("imp_uid : {}", imp_uid);
+        log.info("imp_uid : {}", paymentRequestDTO.getImp_uid());
+        log.info("merchant_uid : {}", paymentRequestDTO.getMerchant_uid());
         log.info("paymentRequestDTO : {}", paymentRequestDTO);
+
+//        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(paymentRequestDTO.getImp_uid());
+//
+//        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getMessage());
+
+//        IamportResponse<Payment> payment = iamportClient.paymentByImpUid(imp_uid);
+//        log.info("결제 요청 응답. 결제 내역 - 주문 번호: {}", payment.getResponse().getMerchantUid());
 
         payService.processPaymentDone(paymentRequestDTO, userPk);
 
