@@ -30,10 +30,17 @@ public class ReviewController {
         this.reviewService = reviewService;
         this.fileUpload = fileUpload;
     }
-    @Operation(summary = "리뷰 등록", description = "reviewDTO : {\n" +
-        "  \"reviewContent\": \"리뷰입니다.\",\n" +
-        "  \"reviewRate\": 4\n" +
-        "}/ 파일 업로드 가능(필수 아님) / path : 상품Pk / 토큰 필요")
+    @Operation(summary = "리뷰 등록", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            goodsPk : 4\s
+            인증/인가 : 로그인 필요\s
+            파일 첨부 시 [Add String item] 클릭하여 가능(선택)\s
+            \s
+            reviewDTO : { "reviewContent": "리뷰입니다", "reviewRate": 4 }\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PostMapping(value = "/{goodsPk}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO> createReview(@AuthenticationPrincipal String userPk,
                                                @RequestPart(required = false) List<MultipartFile> files,
@@ -62,10 +69,17 @@ public class ReviewController {
            .build());
     }
 
-    @Operation(summary = "리뷰 수정", description = "reviewDTO : {\n" +
-        "  \"reviewContent\": \"리뷰 수정 입니다.\",\n" +
-        "  \"reviewRate\": 5\n" +
-        "}/ 파일 업로드 가능(필수 아님) / path : 상품Pk / 토큰 필요")
+    @Operation(summary = "리뷰 수정", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            reviewPk : 1\s
+            인증/인가 : 로그인 필요\s
+            파일 첨부 시 [Add String item] 클릭하여 가능(선택)\s
+            \s
+            reviewDTO : { "reviewContent": "리뷰 수정 입니다.", "reviewRate": 5 }\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PatchMapping(value = "/{reviewPk}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO> updateReview(@AuthenticationPrincipal String userPk,
                                                @RequestPart(required = false) List<MultipartFile> files,
@@ -90,7 +104,13 @@ public class ReviewController {
             .build());
     }
 
-    @Operation(summary = "리뷰 삭제", description = "path : 리뷰Pk / 토큰 필요")
+    @Operation(summary = "리뷰 삭제", description = """
+            테스트 방법 : 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            reviewPk : 1\s
+            인증/인가 : 로그인 필요\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @DeleteMapping("/{reviewPk}")
     public ResponseEntity<ResDTO> deleteReview(@PathVariable Long reviewPk,
                                                @AuthenticationPrincipal String userPk){

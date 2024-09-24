@@ -34,7 +34,13 @@ public class AlarmController {
     }
 
 
-    @Operation(summary = "SSE 세션 연결", description = "sse 연결을 위해선 'http://43.201.5.233/:8080/pages/login'에서 유저로 로그인하여, 관리자가 쪽지를 발송할 경우 화면을 확인해주세요.")
+    @Operation(summary = "SSE 세션 연결",description = """
+            인증/인가 : 로그인 필요 \s
+            \s
+            *sse 연결 : 'http://43.201.5.233:8080/pages/login'에서 일반회원으로 로그인\s
+            *실시간 알림 확인 : 관리자가 쿠폰을 발송할 경우 'http://43.201.5.233:8080/pages/main' 등 뷰 화면에서 뜨는 메시지 확인
+        """
+    )
     @GetMapping(value = "/connect", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> connect(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
                                               @RequestParam(value = "token") String token){
@@ -50,7 +56,11 @@ public class AlarmController {
         return ResponseEntity.ok().body(sseEmitter);
     }
 
-    @Operation(summary = "알람 목록 조회" , description = "유저 토큰 필요")
+    @Operation(summary = "알람 목록 조회" , description = """
+            인증/인가 : 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @GetMapping()
     public ResponseEntity<ResDTO> getAlarmsList(@AuthenticationPrincipal String userPk){
         List<AlarmEntity> alarmsList = alarmService.getAlarmsList(userPk);
@@ -61,7 +71,12 @@ public class AlarmController {
            .build());
     }
 
-    @Operation(summary = "알림 읽음 상태 변경 [ 1 -> 읽음 ]으로 변경", description = "alarmPk와 토큰 필요")
+    @Operation(summary = "알림 읽음 상태 변경 [ 1 -> 읽음 ]으로 변경", description = """
+            alarmPk : 4  \s
+            인증/인가 : 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @PostMapping("/{alarmPk}")
     public ResponseEntity<ResDTO> checkIsRead(@AuthenticationPrincipal String userPk,
                                               @PathVariable Long alarmPk){

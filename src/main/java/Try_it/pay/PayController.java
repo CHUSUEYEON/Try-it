@@ -60,11 +60,15 @@ public class PayController{
 //        return payment;
 //    }
 
-    @Operation(summary = "결제 API", description = "{\n" +
-        "  \"imp_uid\": \"imp_786542026571\",\n" +
-        "  \"order\": 1,\n" +
-        "  \"goods\": 3\n" +
-        "} / order 와 goods 는 조회 시 존재하는 pk로 넣어야 합니다. / 토큰 필요")
+    @Operation(summary = "결제 API", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            인증/인가 : 로그인 필요\s
+            \s
+            { "imp_uid": "imp_786542026571", "order": 1, "goods" : 4}\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PostMapping("/order/payment")
     public ResponseEntity<ResDTO> createPayment(@RequestBody PaymentRequestDTO paymentRequestDTO,
                                                 @AuthenticationPrincipal String userPk)

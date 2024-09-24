@@ -74,17 +74,7 @@ public class AuthController {
             \s
             { "userId": "chuchu", "userName": "추수연", "userPassword": "qwer1234!", "userEmail": "chu@naver.com", "userPhone": 1012345678, "userGender": true, "userAddress": "서울시 서대문구 홍은동" }
         """
-//        "" " +
-//        "\n requestBody : {\n" +
-//        "  \"userId\": \"chuchu\",\n" +
-//        "  \"userName\": \"추수연\",\n" +
-//        "  \"userPassword\": \"qwer1234!\",\n" +
-//        "  \"userEmail\": \"chu@naver.com\",\n" +
-//        "  \"userPhone\": 1012345678,\n" +
-//        "  \"userGender\": true,\n" +
-//        "  \"userAddress\": \"서울시 서대문구 홍은동\"\n" +
-//        "} "
-        )
+    )
     @PostMapping("/users")
     public ResponseEntity<ResDTO> register(@Valid @RequestBody UserDTO userDTO) {
 
@@ -124,24 +114,19 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "로그인", description = "requestBody : { \"userId\" : \"admin\", \"userPassword\" : \"1234\"}")
+    @Operation(summary = "로그인", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "userId": "admin123", "userPassword": "admin123!" }
+        """
+    )
     @PostMapping("/login")
-    public ResponseEntity<ResDTO> login(@Valid @RequestBody UserDTO userDTO){
-        UserEntity user = authService.getUserByCredentials(userDTO.getUserId(), userDTO.getUserPassword());
+    public ResponseEntity<ResDTO> login(@Valid @RequestBody LoginDTO loginDTO){
+        UserEntity user = authService.getUserByCredentials(loginDTO.getUserId(), loginDTO.getUserPassword());
         if(user != null){
             String token = tokenProvider.create(user);
-            final UserDTO responseUserDTO = UserDTO.builder()
+            final LoginDTO responseUserDTO = LoginDTO.builder()
                 .userId(user.getUserId())
-                .userPk(user.getUserPk())
-                .userName(user.getUserName())
-                .userAddress(user.getUserAddress())
-                .userGender(user.getUserGender())
-                .userPhone(user.getUserPhone())
-                .userCreatedAt(user.getUserCreatedAt())
-                .userUpdatedAt(user.getUserUpdatedAt())
-                .userDeletedAt(user.getUserDeletedAt())
-                .userEmail(user.getUserEmail())
-                .userIsAdmin(user.getUserIsAdmin())
                 .token(token)
                .build();
 
@@ -158,9 +143,12 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "메일 인증코드 보내기", description = "requestBody : {\n" +
-        "  \"email\": \"test@example.com\"\n" +
-        "}")
+    @Operation(summary = "메일 인증코드 보내기", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "email": "test@example.com"}
+        """
+)
     @PostMapping("/email")
     public ResponseEntity<ResDTO> sendEmail(@Valid @RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
@@ -174,9 +162,12 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "메일 인증", description = "requestBody : {\n" +
-        "  \"code\": \"string\"\n" +
-        "}")
+    @Operation(summary = "메일 인증", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "code": "111111"}
+        """
+     )
     @PostMapping("/verify-email")
     public ResponseEntity<ResDTO> verifyEmail(@RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();
@@ -189,9 +180,12 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "핸드폰 인증 코드 인증", description = "requestBody : {\n" +
-        "  \"phone\": \"1012345678\"\n" +
-        "}")
+    @Operation(summary = "핸드폰 인증 코드 인증", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "phone": "01012345678"}
+        """
+    )
     @PostMapping("/phone")
     public ResponseEntity<ResDTO> sendMessage(@Valid @RequestBody VerificationDTO verificationDTO)throws IOException{
 
@@ -215,9 +209,12 @@ public class AuthController {
         );
     }
 
-    @Operation(summary = "핸드폰 인증", description = "RequestBody : {\n" +
-        "  \"code\": \"string\"\n" +
-        "}")
+    @Operation(summary = "핸드폰 인증", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            \s
+            { "code": "111111"}
+        """
+    )
     @PostMapping("/verify-phone")
     public ResponseEntity<ResDTO> verifyPhone(@RequestBody VerificationDTO verificationDTO){
         LocalDateTime verifiedAt = LocalDateTime.now();

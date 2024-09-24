@@ -20,18 +20,18 @@ public class UserDTO {
     private Long userPk;
 
     @Schema(description = "회원 아이디", example = "chuchu")
-//    @Pattern(regexp = "(?![0-9])(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z][a-zA-Z0-9].{3,19}", message = "아이디는 숫자로 시작하지 않는 길이 4~20자, 영어 대소문자, 숫자로 이루어진 문자열이어야 합니다.")
+    @Pattern(regexp = "(?![0-9])(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z][a-zA-Z0-9].{3,19}", message = "아이디는 숫자로 시작하지 않는 길이 4~20자, 영어 대소문자, 숫자로 이루어진 문자열이어야 합니다.")
     private String userId;
 
     @Schema(description = "회원 이름", example = "추수연")
     private String userName;
 
     @Schema(description = "회원 비밀번호", example = "qwer1234!")
-//    @Pattern(regexp = "(?![0-9])(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,}", message = "비밀번호는 영어 대소문자, 숫자, 특수문자가 적어도 한 개 이상으로 이루어진 8자 이상의 문자열이어야 합니다.")
+    @Pattern(regexp = "(?![0-9])(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,}", message = "비밀번호는 영어 대소문자, 숫자, 특수문자가 적어도 한 개 이상으로 이루어진 8자 이상의 문자열이어야 합니다.")
     private String userPassword;
 
     @Schema(description = "회원 이메일", example = "chu@naver.com")
-//    @Pattern(regexp = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "Invalid email format")
+    @Pattern(regexp = "^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "Invalid email format")
     private String userEmail;
 
     @Schema(description = "회원 전화번호", example = "01012345678")

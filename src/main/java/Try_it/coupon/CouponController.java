@@ -26,12 +26,15 @@ public class CouponController {
         this.couponService = couponService;
     }
 
-    @Operation(summary = "쿠폰 생성 api", description = " couponDTO : {\n" +
-        "  \"couponName\": \"추석 특집 할인\",\n" +
-        "  \"couponDiscountRate\": 10,\n" +
-        "  \"couponDeadline\": \"2024년 11월 10일\",\n" +
-        "  \"couponContent\": \"추석 특집으로 모든 회원들게 10퍼센트 할인 쿠폰 드립니다.\"\n" +
-        "} / 관리자 토큰 필요")
+    @Operation(summary = "쿠폰 생성 api", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            인증/인가 : 관리자 로그인 필요\s
+            \s
+            { "couponName": "추석 특집 할인", "couponDiscountRate": 10, "couponDeadline": "2024년 11월 10일", "couponContent": "추석 특집으로 모든 회원들게 10퍼센트 할인 쿠폰 드립니다." }\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PostMapping
     public ResponseEntity<ResDTO> createCoupon(@AuthenticationPrincipal String userPk,
                                                @RequestBody CouponDTO couponDTO
@@ -55,10 +58,16 @@ public class CouponController {
            .build());
     }
 
-    @Operation(summary = "쿠폰 전송 api", description = "alarmDTO : {\n" +
-        "  \"alarmContent\": \"알림입니다.\",\n" +
-        "  \"alarmTitle\": \"알림 제목\"\n" +
-        "} / 쿠폰 Pk, 관리자 토큰 필요")
+    @Operation(summary = "쿠폰 전송 api", description = """
+            테스트 방법 : 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            couponPk : 3
+            인증/인가 : 관리자 로그인 필요\s
+            \s
+            { "alarmContent": "알림입니다.", "alarmTitle": "알림 제목" }\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PostMapping("/{couponPk}")
     public ResponseEntity<ResDTO> sendCoupon(@AuthenticationPrincipal String userPk,
                                              @RequestBody AlarmDTO alarmDTO,

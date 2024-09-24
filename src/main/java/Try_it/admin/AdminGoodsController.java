@@ -40,14 +40,17 @@ public class AdminGoodsController {
         this.fileUpload = fileUpload;
     }
 
-    @Operation(summary = "상품 등록", description = "goodsDTO : {\n" +
-        "  \"goodsName\": \"수영복\",\n" +
-        "  \"goodsDescription\": \"수영복입니다\",\n" +
-        "  \"goodsPrice\": 10000\n" +
-        "} " + "/ categoryDTOs : [{\n" +
-        "  \"categoryName\": \"여성\"\n" +
-        "}]\n" + "/ 파일 선택" +
-        "/ 관리자 토큰 필요")
+    @Operation(summary = "상품 등록", description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            인증/인가 : 관리자 로그인 필요\s
+            파일 첨부 시 [Add String item] 클릭하여 가능(선택)\s
+            \s
+            goodsDTO : { "goodsName": "수영복", "goodsDescription": "수영복입니다.", "goodsPrice": 10000 }\s
+            categoryDTOs : [{ "categoryName" : "여성" }, { "categoryName" : "원피스" }]\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO> uploadGoods(@Valid @RequestPart GoodsDTO goodsDTO,
                                               @RequestPart List<CategoryDTO> categoryDTOs,
@@ -75,14 +78,17 @@ public class AdminGoodsController {
            .build());
     }
 
-    @Operation(summary = "상품 수정", description = "goodsDTO : {\n" +
-        "  \"goodsName\": \"상품 변경 테스트\",\n" +
-        "  \"goodsDescription\": \"변경 테스트입니다\",\n" +
-        "  \"goodsPrice\": 9000\n" +
-        "} " + "/ categoryDTOs : [{\n" +
-        "  \"categoryName\": \"남성\"\n" +
-        "}]\n" + "/ 파일 선택(필수 아님)" +
-        "/ 관리자 토큰 필요")
+    @Operation(summary = "상품 수정",  description = """
+            테스트 방법: 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            인증/인가 : 관리자 로그인 필요\s
+            파일 첨부 시 [Add String item] 클릭하여 가능(선택)\s
+            \s
+            goodsDTO : { "goodsName": "상품 변경 테스트", "goodsDescription": "변경 테스트입니다.", "goodsPrice": 9000 }\s
+            categoryDTOs : [{ "categoryName" : "남성" }]\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @PatchMapping(value = "/{goodsPk}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResDTO<Object>> updateGoods(@Valid @RequestPart(required = false) GoodsDTO goodsDTO,
                                               @RequestPart(required = false) List<CategoryDTO> categoryDTOs,
@@ -99,7 +105,12 @@ public class AdminGoodsController {
             .build());
     }
 
-    @Operation(summary = "상품 삭제", description = "관리자 토큰 필요")
+    @Operation(summary = "상품 삭제", description = """
+            goodsPk : 4  \s
+            인증/인가 : 관리자 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @DeleteMapping("/{goodsPk}")
     public ResponseEntity<ResDTO> deleteGoods(@PathVariable Long goodsPk, @AuthenticationPrincipal String userPk){
         GoodsEntity deletedGoods = goodsService.delete(goodsPk, userPk);
@@ -133,7 +144,12 @@ public class AdminGoodsController {
     }
 
 
-    @Operation(summary = "상품 조회", description = "관리자 토큰 필요 / path 로 해당 상품 조회")
+    @Operation(summary = "상품 조회", description = """
+            goodsPk : 4  \s
+            인증/인가 : 관리자 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @GetMapping("/{goodsPk}")
     public  ResponseEntity<ResDTO> getGoods(@AuthenticationPrincipal String userPk, @PathVariable Long goodsPk){
         GoodsEntity goods = goodsService.getGoods(goodsPk, userPk);

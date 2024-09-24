@@ -27,7 +27,11 @@ public class GoodsController {
         this.goodsService = goodsService;
     }
 
-    @Operation(summary = "상품 조회", description = "필터링 >>> bigCategory : 수영복, 용품 / gender : 여성, 남성 / isChild : true, false/ category : 원피스, 탄탄이, 패킹, 노패킹, 실리콘, 메쉬 /keyword로 검색 가능 / 아무것도 설정 안할 경우 전체 조회")
+    @Operation(summary = "상품 조회", description = """
+            필터링 >>> bigCategory : 수영복, 용품 / gender : 여성, 남성 / isChild : true, false/ category : 원피스, 탄탄이, 패킹, 노패킹, 실리콘, 메쉬\s
+            keyword로 검색 가능\s
+            아무것도 설정 안할 경우 전체 조회
+        """)
     @GetMapping("")
     public ResponseEntity<ResDTO<Object>> getGoodsList(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                                @RequestParam(value = "sort", defaultValue = "goodsName") String sort,
@@ -52,7 +56,10 @@ log.warn("ddddd {} {} {} {} {} {} {} {}",page, sort, direction, bigCategory, gen
            .build());
     }
 
-    @Operation(summary = "상품 상세 조회", description = "path : goodsPk")
+    @Operation(summary = "상품 상세 조회", description = """
+            테스트 방법 : 아래 데이터를 복사하여 Parameters 에 붙여넣고 사용\s
+            goodsPk : 3
+        """)
     @GetMapping("/{goodsPk}")
     public ResponseEntity<ResDTO<Object>> getGoods(@PathVariable("goodsPk") Long goodsPk){
         GoodsEntity goods = goodsService.getGoods(goodsPk);

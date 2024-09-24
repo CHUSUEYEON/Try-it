@@ -31,9 +31,15 @@ public class UserController {
         this.favoritesService = favoritesService;
     }
 
-    @Operation(summary = "회원 탈퇴", description = "requestBody : {\n" +
-        "  \"userPassword\": \"qwer1234!\"\n" +
-        "} 패스워드 / 해당 유저의 토큰 필요")
+    @Operation(summary = "회원 탈퇴", description = """
+            테스트 방법 : 아래 데이터를 복사하여 Request body 에 붙여넣고 사용\s
+            인증/인가 : 탈퇴 원하는 유저로 로그인 필요\s
+            \s
+            { "userPassword": "qwer1234!" }\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """
+    )
     @DeleteMapping("")
     public ResponseEntity<ResDTO> deleteUser(@Valid @RequestBody UserDTO userDTO,
                                              @AuthenticationPrincipal String userPk
@@ -56,7 +62,11 @@ public class UserController {
                .build());
     }
 
-    @Operation(summary = "찜 목록 조회", description = "토큰 필요")
+    @Operation(summary = "찜 목록 조회", description = """
+            인증/인가 : 로그인 필요\s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @GetMapping("/favorites")
     public ResponseEntity<ResDTO> getFavorites(@AuthenticationPrincipal String userPk){
         List<FavoritesEntity> getFavorites = favoritesService.get(userPk);
