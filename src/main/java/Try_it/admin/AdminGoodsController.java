@@ -122,7 +122,11 @@ public class AdminGoodsController {
            .build());
     }
 
-    @Operation(summary = "상품 조회", description = "관리자 토큰 필요, keywords로 검색 가능(필수 아님, 키워드 없으면 전체 검색)")
+    @Operation(summary = "상품 조회", description = """
+            인증/인가 : 관리자 로그인 필요 \s
+            \s
+            *로그인 방법은 문서 최상단 설명 참고
+        """)
     @GetMapping("")
     public ResponseEntity<ResDTO<Object>> getGoodsList(@Parameter(name = "page", description = "현재 페이지 번호", in = ParameterIn.QUERY, example = "0")
                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
