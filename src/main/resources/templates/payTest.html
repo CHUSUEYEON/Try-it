@@ -195,12 +195,35 @@
       var IMP = window.IMP;
       IMP.init("imp38754276");
 
+      const usedMerchantUids = new Set(); // Set을 이용해 중복 방지
+
+      function generateUniqueRandomNumber(minLength = 8, maxLength = 10){
+        let randomNumber;
+
+        do{
+          const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+          randomNumber = "";
+
+          for(let i = 0; i < length; i++){
+            randomNumber += Math.floor(Math.random() * 10);
+          }
+        } while (usedMerchantUids.has(randomNumber));
+
+        usedMerchantUids.add(randomNumber);
+        return randomNumber;
+      }
+
+
+
       function requestPay(orderInfo) {
+
+        const randomMerchantUid = generateUniqueRandomNumber();
+
         IMP.request_pay(
           {
             pg: "html5_inicis",
             pay_method: "card",
-            merchant_uid: "1234234489",
+            merchant_uid: randomMerchantUid,
             name: "test",
             amount: "100",
             buyer_email: "gildong@gmail.com",
