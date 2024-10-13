@@ -175,6 +175,51 @@ public class OrderService {
 
         return completedOrders;
     }
+
+    public OrderEntity createGoodsOrder(final String userPk,
+                                              final Long goodsPk,
+                                              final Long couponPk,
+                                              final OrderDTO orderDTO,
+                                        final Integer goodsQuantity){
+        UserEntity user = userRepository.findByUserPk(Long.valueOf(userPk))
+            .orElseThrow(() -> new IllegalArgumentException("로그인을 해주세요."));
+
+        CouponEntity coupon = null;
+        CouponUserMappingEntity mapping = null;
+        if (couponPk != null) {
+            coupon = couponRepository.findById(couponPk)
+                .orElseThrow(() -> new IllegalArgumentException("쿠폰이 없습니다."));
+            mapping = couponUserMappingRepository.findByUser_UserPkAndCoupon_CouponPk(Long.valueOf(userPk), coupon.getCouponPk())
+                .orElseThrow(()-> new IllegalArgumentException("사용 가능한 쿠폰이 없습니다."));
+        }
+
+        GoodsEntity goods = goodsRepository.findById(goodsPk)
+            .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        OrderEntity newOrder = OrderEntity.builder()
+            .orderAddress(orderDTO.getOrderAddress())
+            .orderPhone(orderDTO.getOrderPhone())
+            .orderRecipient(orderDTO.getOrderRecipient())
+            .orderIsCancelled(false)
+            .orderTotal(goods.getGoodsPrice() * goodsQuantity)
+            .coupon(mapping!= null? mapping.getCoupon() : null)
+            .orderRequest(orderDTO.getOrderRequest())
+            .user(user)
+            .build();
+
+        OrderEntity savedOrder = orderRepository.save(newOrder);
+
+        OrderListEntity orderList = OrderListEntity.builder()
+            .order(newOrder)
+            .goods(goods)
+            .build();
+
+        orderListRepository.save(orderList);
+
+        return savedOrder;
+    }
+
+
 //
 //
 //        List<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk));

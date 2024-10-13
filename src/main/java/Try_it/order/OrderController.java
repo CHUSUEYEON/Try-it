@@ -102,10 +102,25 @@ public class OrderController {
                .build());
         }
 
-        List<OrderEntity> completedOrders =orderService.createCartsOrder(userPk, temporaryOrder, orderDTO, couponPk);
+        List<OrderEntity> completedOrders = orderService.createCartsOrder(userPk, temporaryOrder, orderDTO, couponPk);
         return ResponseEntity.ok().body(ResDTO.builder()
             .statusCode(StatusCode.OK)
             .data(completedOrders)
+            .message("주문리스트에 주문 추가 성공")
+            .build());
+    }
+
+    @PostMapping("/goods/{goodsPk}")
+    public ResponseEntity<ResDTO> createGoodsOrder(@AuthenticationPrincipal String userPk,
+                                                   @PathVariable Long goodsPk,
+                                                   @RequestParam(required = false) Long couponPk,
+                                                   @RequestParam Integer goodsQuantity,
+                                                   @RequestBody OrderDTO orderDTO){
+
+        OrderEntity completedOrder = orderService.createGoodsOrder(userPk, goodsPk, couponPk, orderDTO, goodsQuantity);
+        return ResponseEntity.ok().body(ResDTO.builder()
+            .statusCode(StatusCode.OK)
+            .data(completedOrder)
             .message("주문리스트에 주문 추가 성공")
             .build());
     }

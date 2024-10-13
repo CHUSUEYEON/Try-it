@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>장바구니</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f2f2f2;
+        padding-bottom: 10px;
+    }
+
+    .cart-items {
+        margin-bottom: 20px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+    .cart-item img {
+        max-width: 100px;
+        border-radius: 5px;
+    }
+
+    .item-info {
+        flex-grow: 1;
+        margin-left: 20px;
+    }
+
+    .item-info h2 {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .item-info p {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .price {
+        font-size: 16px;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+
+    .quantity {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .btn-remove {
+        background-color: #e74c3c;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-remove:hover {
+        background-color: #c0392b;
+    }
+
+    .btn-checkoutItem {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 10px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-checkoutItem:hover {
+        background-color: #45a049;
+    }
+
+    .total {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .btn-checkout {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-checkout:hover {
+        background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>장바구니</h1>
+
+    <!-- 장바구니 목록 -->
+    <div class="cart-items">
+      <div class="cart-item">
+        <img src="https://via.placeholder.com/100" alt="상품 이미지">
+        <div class="item-info">
+          <h2>상품명: <span id="cartGoodsName">TEST</span></h2>
+          <p>상품 설명: <span id="cartGoodsDescription">This is a test product.</span></p>
+          <p class="price">₩ <span id="cartGoodsPrice">5000</span></p>
+          <div class="quantity">
+            <label for="quantity">수량:</label>
+            <select id="quantity">
+              <!-- JavaScript로 옵션 추가 -->
+            </select>
+          </div>
+        </div>
+        <button class="btn-remove">제거</button>
+        <button class="btn-checkoutItem" id="checkoutItemBtn">결제하기</button>
+      </div>
+
+<!--      <div class="cart-item">-->
+<!--        <img src="https://via.placeholder.com/100" alt="상품 이미지">-->
+<!--        <div class="item-info">-->
+<!--          <h2>상품명: 임시 상품</h2>-->
+<!--          <p>상품 설명: 임시 상품입니다.</p>-->
+<!--          <p class="price">₩ 3000</p>-->
+<!--          <div class="quantity">-->
+<!--            <label for="quantity2">수량:</label>-->
+<!--            <select id="quantity2">-->
+<!--              &lt;!&ndash; JavaScript로 옵션 추가 &ndash;&gt;-->
+<!--            </select>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <button class="btn-remove">제거</button>-->
+<!--        <button class="btn-checkoutItem" id="checkoutItemBtn2">결제하기</button>-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <!-- 총 가격 -->
+    <div class="total">
+      총 합계: ₩ <span id="totalPrice">8000</span>
+    </div>
+
+    <!-- 주문하기 버튼 -->
+    <form>
+      <button type="button" class="btn-checkout" id="checkoutBtn">결제하기</button>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+     const token = localStorage.getItem('jwtToken');
+
+     if (!token) {
+     console.error('JWT Token not found!');
+     return;
+    }
+   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+   const axiosInstance = axios.create({ withCredentials: true }); // 세션값을 저장하고 사용하기 위해 호출
+
+   async function tempOrder() {
+        const quantity = quantitySelect.value;
+     try {
+       const response = await axiosInstance.post(
+      'http://localhost:8080/orders/goods/temp',
+      {
+            quantity : quantity,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+       console.log(response.data);
+       window.location.href = '/pages/payment';
+     } catch (error) {
+       console.error("tempOrder error:", error);
+     }
+   }
+
+   const quantitySelect = document.getElementById('quantity');
+        for (let i = 1; i <= 100; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i; // 드롭다운에 표시될 숫자
+      quantitySelect.appendChild(option);
+    }
+
+   document.querySelector('.btn-checkoutItem').addEventListener('click', tempOrder);
+ });
+
+ // 주문하기 버튼 클릭 시 임시로 알림 출력
+ document.getElementById('checkoutBtn').addEventListener('click', function() {
+   alert('결제하기 버튼을 눌렀습니다.');
+ });
+
+ // 상품 제거 버튼 클릭 시 임시로 알림 출력
+ const removeButtons = document.querySelectorAll('.btn-remove');
+ removeButtons.forEach(button => {
+   button.addEventListener('click', function() {
+     alert('상품이 장바구니에서 제거되었습니다.');
+   });
+ });
+  </script>
+</body>
+</html>

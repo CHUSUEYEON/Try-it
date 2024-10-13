@@ -65,6 +65,11 @@
         margin-top: 10px;
     }
 
+    .quantity {
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
     .btn-order {
         background-color: #4CAF50;
         color: white;
@@ -108,12 +113,20 @@
 
     <!-- 상품 이미지 및 정보 -->
     <div class="product-details">
-      <img  alt="상품 이미지">
+      <img alt="상품 이미지">
 
       <div class="product-info">
         <h2>상품명 <span id="goodsName">TEST</span></h2>
         <p class="price">₩ <span id="goodsPrice">5000</span> 상품가격</p>
         <p>상품 설명 :<span id="goodsDescription"> This is a test.</span></p>
+
+        <!-- 상품 수량 선택 -->
+        <div class="quantity">
+          <label for="quantity">수량:</label>
+          <select id="quantity">
+            <!-- JavaScript로 옵션 추가 -->
+          </select>
+        </div>
       </div>
     </div>
 
@@ -139,22 +152,30 @@
         console.error('JWT Token not found!');
         return;
       }
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Authorization 오타 수정
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      const axiosInstance = axios.create({ withCredentials: true }); // 세션값을 저장하고 사용하기 위해 호출
-
-      async function tempOrder() {
+      async function Order() {
+        const quantity = quantitySelect.value;
         try {
-          const response = await axiosInstance.post('http://localhost:8080/orders/goods/temp', {
-
-          }); // {} 추가하여 요청이 정상적으로 전송됨
+          const response = await axiosInstance.post('http://localhost:8080/orders/goods/{goodsPk}', {
+            quantity : quantity,
+          });
           console.log(response.data);
         } catch (error) {
-          console.error("tempOrder error:", error);
+          console.error("Order error:", error);
         }
       }
 
-      document.getElementById('orderBtn').addEventListener('click', tempOrder);
+      const quantitySelect = document.getElementById('quantity');
+        for (let i = 1; i <= 100; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i; // 드롭다운에 표시될 숫자
+      quantitySelect.appendChild(option);
+    }
+
+    document.getElementById('orderBtn').addEventListener('click', Order);
+
     });
   </script>
 </body>

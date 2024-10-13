@@ -32,4 +32,7 @@ public class Controller {
 
     @GetMapping("/goodsDetail")
     public String goodsDetailPage(Model model){return "goodsDetail";}
+
+    @GetMapping("/cart")
+    public String cartPage(Model model){return "cart";}
 }
