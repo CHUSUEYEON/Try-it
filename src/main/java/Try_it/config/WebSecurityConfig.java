@@ -44,7 +44,8 @@ public class WebSecurityConfig {
                     "/api/v1/**",
                     "/auth/**",
                     "/goods/**",
-                    "/pages/**",
+                    "/pages/login",
+                    "/pages/main",
                     "/favicon.ico/**"
                 ).permitAll()
                 .anyRequest().authenticated()

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,50 +129,17 @@
   </style>
 </head>
 <body>
-
   <div class="container">
     <h1>장바구니</h1>
 
     <!-- 장바구니 목록 -->
-    <div class="cart-items">
-      <div class="cart-item">
-        <img src="https://via.placeholder.com/100" alt="상품 이미지">
-        <div class="item-info">
-          <h2>상품명: <span id="cartGoodsName">TEST</span></h2>
-          <p>상품 설명: <span id="cartGoodsDescription">This is a test product.</span></p>
-          <p class="price">₩ <span id="cartGoodsPrice">5000</span></p>
-          <div class="quantity">
-            <label for="quantity">수량:</label>
-            <select id="quantity">
-              <!-- JavaScript로 옵션 추가 -->
-            </select>
-          </div>
-        </div>
-        <button class="btn-remove">제거</button>
-        <button class="btn-checkoutItem" id="checkoutItemBtn">결제하기</button>
-      </div>
-
-<!--      <div class="cart-item">-->
-<!--        <img src="https://via.placeholder.com/100" alt="상품 이미지">-->
-<!--        <div class="item-info">-->
-<!--          <h2>상품명: 임시 상품</h2>-->
-<!--          <p>상품 설명: 임시 상품입니다.</p>-->
-<!--          <p class="price">₩ 3000</p>-->
-<!--          <div class="quantity">-->
-<!--            <label for="quantity2">수량:</label>-->
-<!--            <select id="quantity2">-->
-<!--              &lt;!&ndash; JavaScript로 옵션 추가 &ndash;&gt;-->
-<!--            </select>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <button class="btn-remove">제거</button>-->
-<!--        <button class="btn-checkoutItem" id="checkoutItemBtn2">결제하기</button>-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="cart-items" id="cartItemsContainer">
+      <!-- 자바스크립트로 동적으로 추가할 내용 -->
+    </div>
 
     <!-- 총 가격 -->
     <div class="total">
-      총 합계: ₩ <span id="totalPrice">8000</span>
+      총 합계: ₩ <span id="totalPrice"></span>
     </div>
 
     <!-- 주문하기 버튼 -->
@@ -180,64 +147,68 @@
       <button type="button" class="btn-checkout" id="checkoutBtn">결제하기</button>
     </form>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-     const token = localStorage.getItem('jwtToken');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('jwtToken');
 
-     if (!token) {
-     console.error('JWT Token not found!');
-     return;
-    }
-   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-   const axiosInstance = axios.create({ withCredentials: true }); // 세션값을 저장하고 사용하기 위해 호출
-
-   async function tempOrder() {
-        const quantity = quantitySelect.value;
-     try {
-       const response = await axiosInstance.post(
-      'http://localhost:8080/orders/goods/temp',
-      {
-            quantity : quantity,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!token) {
+        console.error('JWT Token not found!');
+        return;
       }
-    );
-       console.log(response.data);
-       window.location.href = '/pages/payment';
-     } catch (error) {
-       console.error("tempOrder error:", error);
-     }
-   }
 
-   const quantitySelect = document.getElementById('quantity');
-        for (let i = 1; i <= 100; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i; // 드롭다운에 표시될 숫자
-      quantitySelect.appendChild(option);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      const axiosInstance = axios.create({ withCredentials: true });
+
+      // 장바구니 데이터 가져오기
+      async function getCarts() {
+        try {
+          const response = await axiosInstance.get('http://localhost:8080/carts');
+          const carts = response.data; // 서버에서 받은 장바구니 데이터
+
+          // 장바구니 아이템을 동적으로 추가
+          const cartItemsContainer = document.getElementById('cartItemsContainer');
+          cartItemsContainer.innerHTML = ''; // 기존 내용을 지우기
+
+          carts.forEach(cartItem => {
+            const cartItemHTML = `
+              <div class="cart-item">
+                <img src="https://via.placeholder.com/100" alt="상품 이미지">
+                <div class="item-info">
+                  <h2>상품명: <span id="cartGoodsName">${cartItem.goods.goodsName}</span></h2>
+                  <p>상품 설명: <span id="cartGoodsDescription">${cartItem.goods.goodsDescription}</span></p>
+                  <p class="price">₩ <span id="cartGoodsPrice">${cartItem.goods.goodsPrice}</span></p>
+                </div>
+                <button class="btn-remove">제거</button>
+                <button class="btn-checkoutItem" id="checkoutItemBtn">결제하기</button>
+              </div>
+            `;
+            cartItemsContainer.insertAdjacentHTML('beforeend', cartItemHTML);
+          });
+        } catch (error) {
+          console.error('getCarts error:', error);
+        }
+      }
+
+      // 페이지 로드 시 장바구니 데이터 가져오기
+      await getCarts();
+
+      // 결제하기 버튼 클릭 이벤트 핸들러
+      document.getElementById('checkoutBtn').addEventListener('click', tempOrder);
+    });
+
+    async function tempOrder() {
+      try {
+        const response = await axios.post('http://localhost:8080/orders/goods/temp', {});
+        console.log(response.data);
+        window.location.href = '/pages/payment';
+      } catch (error) {
+        console.error("tempOrder error:", error);
+      }
     }
-
-   document.querySelector('.btn-checkoutItem').addEventListener('click', tempOrder);
- });
-
- // 주문하기 버튼 클릭 시 임시로 알림 출력
- document.getElementById('checkoutBtn').addEventListener('click', function() {
-   alert('결제하기 버튼을 눌렀습니다.');
- });
-
- // 상품 제거 버튼 클릭 시 임시로 알림 출력
- const removeButtons = document.querySelectorAll('.btn-remove');
- removeButtons.forEach(button => {
-   button.addEventListener('click', function() {
-     alert('상품이 장바구니에서 제거되었습니다.');
-   });
- });
   </script>
 </body>
 </html>
