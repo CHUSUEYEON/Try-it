@@ -50,14 +50,14 @@ public class Controller {
 
     @GetMapping("/cart")
     public String getCarts(@AuthenticationPrincipal String userPk,
-                           @RequestParam(value = "page", defaultValue = "0") Integer page,
-                           @RequestParam(value = "sort", defaultValue = "cartCreatedAt") String sort,
-                           @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+//                           @RequestParam(value = "page", defaultValue = "0") Integer page,
+//                           @RequestParam(value = "sort", defaultValue = "cartCreatedAt") String sort,
+//                           @RequestParam(value = "direction", defaultValue = "ASC") String direction,
                            Model model
     ){
         System.out.println("aaaaaaaa");
         System.out.println("userPk = " + userPk);
-        Page<CartEntity> carts = cartService.getCarts(page, sort, direction, userPk);
+//        Page<CartEntity> carts = cartService.getCarts(page, sort, direction, userPk);
         System.out.println("aaaaaaaa");
 //        System.out.println("Carts: {}" + carts.getContent());
 //        model.addAttribute("carts", carts.getContent()); // 장바구니 목록
