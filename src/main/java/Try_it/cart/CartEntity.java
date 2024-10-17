@@ -36,9 +36,11 @@ public class CartEntity {
     @CreationTimestamp
     private Timestamp cartCreatedAt;
 
-    @ManyToOne
+//    @ManyToOne
+//    @JoinColumn(name = "g_pk", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "g_pk", nullable = false)
-    @JsonBackReference
+//    @JsonBackReference
     private GoodsEntity goods;
 
     @ManyToOne

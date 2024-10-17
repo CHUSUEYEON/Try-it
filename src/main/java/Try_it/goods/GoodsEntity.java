@@ -6,6 +6,7 @@ import Try_it.favorites.FavoritesEntity;
 import Try_it.order.OrderListEntity;
 import Try_it.pay.PayEntity;
 import Try_it.review.ReviewEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -79,6 +80,7 @@ public class GoodsEntity {
     private List<PayEntity> pay;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL)
-    @JsonManagedReference
+//    @JsonManagedReference
+    @JsonBackReference
     private List<CartEntity> cart;
 }

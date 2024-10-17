@@ -40,7 +40,10 @@ public class Controller {
     public String orderPage(Model model){return "order";}
 
     @GetMapping("/payment")
-    public String payPage(Model model){return "payTest";}
+    public String payPage(Model model){
+        // TODO: modelAttribute 이용하여 View에 session에 담긴 주문 정보 보내기
+        return "payTest";
+    }
 
     @GetMapping("/goodsDetail")
     public String goodsDetailPage(Model model){return "goodsDetail";}
