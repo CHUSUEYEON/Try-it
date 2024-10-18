@@ -124,7 +124,7 @@ public class CartService {
             .orElseThrow(()-> new IllegalStateException("로그인을 해주세요."));
 
         Page<CartEntity> carts = cartRepository.findAllByUser_userPk(Long.valueOf(userPk), pageable);
-//        carts.getContent().get(0).getGoods();
+
         if(carts == null){
             throw new IllegalStateException("장바구니에 저장된 상품이 없습니다.");
         }
