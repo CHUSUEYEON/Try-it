@@ -186,7 +186,7 @@ p span {
   // 로그인 상태 확인 및 SSE 연결 설정
   function checkLoginStatus() {
       const token = localStorage.getItem('jwtToken');
-<!--      await axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;-->
+  //    await axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       if (token) {
           connectToNotifications();
           console.log(token);
@@ -207,14 +207,14 @@ p span {
              // 주문 상품 리스트를 동적으로 렌더링
             const orderListTable = document.querySelector('tbody');
             orderListTable.innerHTML = ''; // 기존 내용 삭제
-<!--            res.data.orderList.forEach(item => {-->
-<!--                const row = `<tr>-->
-<!--                    <td>${item.goods.goodsName}</td>-->
-<!--                    <td>${item.quantity}</td>-->
-<!--                    <td>${new Intl.NumberFormat().format(item.goods.goodsPrice)} 원</td>-->
-<!--                </tr>`;-->
-<!--                orderListTable.innerHTML += row;-->
-<!--            });-->
+          //  res.data.orderList.forEach(item => {
+          //      const row = `<tr>
+          //          <td>${item.goods.goodsName}</td>
+          //          <td>${item.quantity}</td>
+          //          <td>${new Intl.NumberFormat().format(item.goods.goodsPrice)} 원</td>
+          //      </tr>`;
+          //      orderListTable.innerHTML += row;
+          //  });
 
             // 총 주문 금액
             document.querySelector('p span').textContent = `${new Intl.NumberFormat().format(order.orderTotal)} 원`;
