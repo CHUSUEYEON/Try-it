@@ -41,7 +41,7 @@ public class Controller {
 
     @GetMapping("/payment")
     public String payPage(Model model){
-        // TODO: modelAttribute 이용하여 View에 session에 담긴 주문 정보 보내기
+        // (2) TODO: modelAttribute 이용하여 View에 session에 담긴 주문 정보 보내기
         return "payTest";
     }
 
