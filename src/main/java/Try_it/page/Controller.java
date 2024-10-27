@@ -58,10 +58,8 @@ public class Controller {
 //                           @RequestParam(value = "direction", defaultValue = "ASC") String direction,
                            Model model
     ){
-        System.out.println("aaaaaaaa");
         System.out.println("userPk = " + userPk);
 //        Page<CartEntity> carts = cartService.getCarts(page, sort, direction, userPk);
-        System.out.println("aaaaaaaa");
 //        System.out.println("Carts: {}" + carts.getContent());
 //        model.addAttribute("carts", carts.getContent()); // 장바구니 목록
 //        model.addAttribute("totalPrice", carts.getContent().stream()
