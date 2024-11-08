@@ -1,28 +1,29 @@
 package Try_it.page;
 
-import Try_it.cart.CartEntity;
 import Try_it.cart.CartService;
+import Try_it.order.OrderDTO;
+import Try_it.order.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@Slf4j
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @org.springframework.stereotype.Controller
 @RequestMapping("/pages")
+@Slf4j
 public class Controller {
     private final CartService cartService;
+    private final OrderService orderService;
 
     @Autowired
-    public Controller(CartService cartService) {
+    public Controller(CartService cartService, OrderService orderService) {
         this.cartService = cartService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/login")
@@ -40,8 +41,19 @@ public class Controller {
     public String orderPage(Model model){return "order";}
 
     @GetMapping("/payment")
-    public String payPage(Model model){
+    public String payPage(@AuthenticationPrincipal String userPk,
+                          Model model){
+        System.out.println("userPk2222 = " + userPk);
         // (2) TODO: modelAttribute 이용하여 View에 session에 담긴 주문 정보 보내기
+        List<OrderDTO> tempOrders = orderService.createCartsTempOrder(userPk);
+        tempOrders.forEach(entity -> log.info("Entity: {}", entity.getGoods().toString()));
+        model.addAttribute("tempOrders", tempOrders);
+
+        AtomicInteger totalPrice = new AtomicInteger();
+
+         tempOrders.forEach(entity -> totalPrice.addAndGet(entity.getOrderTotal()));
+         model.addAttribute("totalPrice", totalPrice);
+//        tempOrders.forEach(entity -> model.addAttribute("orderQuantity", entity.getOrderQuantity()));
         return "payTest";
     }
 

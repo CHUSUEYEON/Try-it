@@ -36,6 +36,7 @@
                     document.getElementById('loginResult').textContent = 'Login successful!';
                     const token = response.data.data.token;
                     localStorage.setItem('jwtToken', token); // JWT 토큰 저장
+                    setCookie('jwtToken', token, 1);
 
                     // SSE 연결 시작
                     connectToNotifications();
@@ -56,6 +57,16 @@
                 }
             }
         });
+
+        function setCookie(name, value, exp, path, domain) {
+            var date = new Date();
+             date.setTime(date.getTime() + exp*24*60*60*1000); // 일
+             var cookieText=escape(name)+'='+escape(value);
+             cookieText+='; EXPIRES='+date.toUTCString();
+             cookieText+=(path ? '; PATH='+cookiePath : '; PATH=/');
+             cookieText+=(domain ? '; DOMAIN='+cookieDomain : '');
+             document.cookie=cookieText;
+        }
 
         // SSE 연결 함수
         function connectToNotifications() {

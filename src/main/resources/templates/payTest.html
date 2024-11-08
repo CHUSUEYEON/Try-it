@@ -151,12 +151,18 @@
           <th>가격</th>
         </tr>
         <!--  (1) TODO : 서버에서 넘겨준 주문 리스트 렌더링. Thymeleaf 이용  -->
+
         </thead>
         <tbody>
+        <tr th:each="order : ${tempOrders}">
+          <td th:text = "${order.goodsName}">상품명</td>
+          <td th:text="${order.orderQuantity}"></td>
+          <td th:text="${order.orderTotal}"></td>
+        </tr>
         </tbody>
       </table>
       <hr>
-      <p>총 주문 금액: <span id="totalPrice">500</span></p>
+      <p>총 주문 금액: <span id="totalPrice" th:text="${totalPrice}"></span></p>
       <p>쿠폰: <span id="coupon"></span> </p>
     </div>
 
@@ -225,8 +231,8 @@
             pg: "html5_inicis",
             pay_method: "card",
             merchant_uid: randomMerchantUid,
-            name: "test",
-            amount: "100",
+            name: "test", //TODO : 실제 이름 데이터 받아오기
+            amount: "100", //TODO : 실제 가격 데이터 받아오기
             buyer_email: "gildong@gmail.com",
             buyer_name: orderInfo.orderName,
             buyer_tel: orderInfo.orderPhone,

@@ -44,4 +44,24 @@ public class OrderDTO {
 
     private Long goods;
 
+    private String goodsName;
+
+
+    @Override
+    public String toString() {
+        return "OrderDTO{" +
+            "orderPk=" + orderPk +
+            ", orderTotal=" + orderTotal +
+            ", orderRequest='" + orderRequest + '\'' +
+            ", orderRecipient='" + orderRecipient + '\'' +
+            ", orderAddress='" + orderAddress + '\'' +
+            ", orderPhone='" + orderPhone + '\'' +
+            ", orderCreatedAt=" + orderCreatedAt +
+            ", orderIsCancelled=" + orderIsCancelled +
+            ", orderQuantity=" + orderQuantity +
+            ", user=" + user +
+            ", coupon=" + coupon +
+            ", goods=" + goods +
+            '}';
+    }
 }

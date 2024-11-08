@@ -121,6 +121,7 @@ public class OrderService {
                 .orderRecipient(user.getUserName())
                 .user(user.getUserPk())
                 .goods(goods.getGoodsPk())
+                .goodsName(goods.getGoodsName())
                 .orderQuantity(itemQuantity)
                 .build();
 

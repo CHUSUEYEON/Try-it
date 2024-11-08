@@ -2,6 +2,7 @@ package Try_it.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 @Slf4j
@@ -49,11 +51,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     public String parseBearerToken(HttpServletRequest request){
         // 요청의 Header 의 bearer 토큰에서 jwt 토큰을 뽑아오는 작업
+        String cookieToken =  Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("jwtToken"))
+            .findFirst()
+            .map(Cookie ::getValue)
+            .orElse(null);
+
+        log.warn("test token {}" , cookieToken);
         String bearerToken = request.getHeader("Authorization");
 
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
-            return bearerToken.substring(7);
+        String token = bearerToken != null ? bearerToken : "Bearer " + cookieToken;
+
+        log.warn("test token22222 {}" , token);
+
+        if(StringUtils.hasText(token) && token.startsWith("Bearer ")){
+            return token.substring(7);
         }
+
+
         return null;
     }
 }

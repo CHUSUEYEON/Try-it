@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @RestController
@@ -130,7 +134,24 @@ public class AuthController {
                 .token(token)
                .build();
 
-            return ResponseEntity.ok().body(ResDTO
+//            ResponseCookie cookie = ResponseCookie
+//                .from("jwtToken", token)
+//                .domain("localhost")
+//                .path("/login")
+//                .httpOnly(true)
+//                .secure(false)
+//                .maxAge(Duration.ofDays(1))
+//                .sameSite("Strict")
+//                .build();
+//
+//            log.warn("cookie :: {}", cookie);
+//            log.warn("cookie2222 :: {}", cookie.toString());
+
+            //유효시간 24시간
+
+            return ResponseEntity.ok()
+//                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(ResDTO
                .builder()
                .statusCode(StatusCode.OK)
                .data(responseUserDTO)
