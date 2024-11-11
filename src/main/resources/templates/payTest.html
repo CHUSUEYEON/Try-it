@@ -155,9 +155,9 @@
         </thead>
         <tbody>
         <tr th:each="order : ${tempOrders}">
-          <td th:text = "${order.goodsName}">상품명</td>
+          <td th:text = "${order.goodsName}" id="name">상품명</td>
           <td th:text="${order.orderQuantity}"></td>
-          <td th:text="${order.orderTotal}"></td>
+          <td th:text="${order.orderTotal}" id="orderTotal"></td>
         </tr>
         </tbody>
       </table>
@@ -225,14 +225,16 @@
       function requestPay(orderInfo) {
 
         const randomMerchantUid = generateUniqueRandomNumber();
+        const name = document.getElementById("name");
+        const orderTotal = document.getElementById("orderTotal");
 
         IMP.request_pay(
           {
             pg: "html5_inicis",
             pay_method: "card",
             merchant_uid: randomMerchantUid,
-            name: "test", //TODO : 실제 이름 데이터 받아오기
-            amount: "100", //TODO : 실제 가격 데이터 받아오기
+            name: name , //TODO : 실제 이름 데이터 받아오기
+            amount: orderTotal, //TODO : 실제 가격 데이터 받아오기
             buyer_email: "gildong@gmail.com",
             buyer_name: orderInfo.orderName,
             buyer_tel: orderInfo.orderPhone,
